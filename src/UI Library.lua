@@ -1274,7 +1274,7 @@ function library:LoadConfig(name)
 
 		local filepath = string.format("%s//%s.%s", self.folder, name, self.extension)
 
-		if isfolder(folderpath) and isfile(filepath) then  
+		if isfolder(self.folder) and isfile(filepath) then
 			local file = readfile(filepath)
 			local config = services.HttpService:JSONDecode(file)
 
