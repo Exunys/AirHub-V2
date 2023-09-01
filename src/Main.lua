@@ -677,7 +677,12 @@ Crosshair_Settings:Slider({
 	end
 })
 
-Crosshair_Settings:Slider({
+local _Crosshair_Settings = _Crosshair:Section({
+	Name = "Crosshair Settings (2 / 2)",
+	Side = "Left"
+})
+
+_Crosshair_Settings:Slider({
 	Name = "Pulsing Speed",
 	Flag = "Crosshair_PulsingSpeed",
 	Default = Crosshair.PulsingSpeed,
@@ -686,11 +691,6 @@ Crosshair_Settings:Slider({
 	Callback = function(Value)
 		Crosshair.PulsingSpeed = Value
 	end
-})
-
-local _Crosshair_Settings = _Crosshair:Section({
-	Name = "Crosshair Settings (2 / 2)",
-	Side = "Left"
 })
 
 _Crosshair_Settings:Slider({
