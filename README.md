@@ -15,7 +15,8 @@ The UI Library that this script uses is a forked version of [vozoid's](https://g
 Press ***Right Shift*** to open/close the GUI. You can also change this key by opening the settings tab and by navigating to the *Settings* section that is located at the top left side of the GUI.
 
 #
-### [1] ![pic1](https://github.com/Exunys/AirHub-V2/assets/76539058/bc4f83be-132c-4146-8561-2aea5a712a9b)  [2]  ![pic2](https://github.com/Exunys/AirHub-V2/assets/76539058/bc03fa46-846d-445f-9483-9c91d2ec1b3e)
+### [1] ![pic1](https://github.com/Exunys/AirHub-V2/assets/76539058/bc4f83be-132c-4146-8561-2aea5a712a9b)
+### [2] ![pic2](https://github.com/Exunys/AirHub-V2/assets/76539058/bc03fa46-846d-445f-9483-9c91d2ec1b3e)
 
 #
 # 📑 Update Log *(DD/MM/YYYY)*
