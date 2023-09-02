@@ -3783,13 +3783,13 @@ function library:Load(options)
 		return tabtypes
 	end
 
-	do
+	task.delay(1, function(
 		local oldPos = holder.Position
 		holder.Position = Vector2.new(0, 0)
 		task.delay(0.25, function()
 			holder.Position = oldPos
 		end)
-	end
+	end)
 
 	return windowtypes
 end
