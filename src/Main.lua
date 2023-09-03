@@ -123,7 +123,7 @@ AddValues(ESPDeveloperSection, ESP_DeveloperSettings, {}, "ESP_DeveloperSettings
 
 ESPDeveloperSection:Dropdown({
 	Name = "Update Mode",
-	Flag = "UpdateMode",
+	Flag = "ESP_UpdateMode",
 	Content = {"RenderStepped", "Stepped", "Heartbeat"},
 	Default = ESP_DeveloperSettings.UpdateMode,
 	Callback = function(Value)
@@ -133,7 +133,7 @@ ESPDeveloperSection:Dropdown({
 
 ESPDeveloperSection:Dropdown({
 	Name = "Team Check Option",
-	Flag = "TeamCheckOption",
+	Flag = "ESP_TeamCheckOption",
 	Content = {"TeamColor", "Team"},
 	Default = ESP_DeveloperSettings.TeamCheckOption,
 	Callback = function(Value)
@@ -143,7 +143,7 @@ ESPDeveloperSection:Dropdown({
 
 ESPDeveloperSection:Slider({
 	Name = "Rainbow Speed",
-	Flag = "RainbowSpeed",
+	Flag = "ESP_RainbowSpeed",
 	Default = ESP_DeveloperSettings.RainbowSpeed * 10,
 	Min = 5,
 	Max = 30,
@@ -154,7 +154,7 @@ ESPDeveloperSection:Slider({
 
 ESPDeveloperSection:Slider({
 	Name = "Width Boundary",
-	Flag = "WidthBoundary",
+	Flag = "ESP_WidthBoundary",
 	Default = ESP_DeveloperSettings.WidthBoundary * 10,
 	Min = 5,
 	Max = 30,
