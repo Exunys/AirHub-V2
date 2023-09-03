@@ -1,4 +1,4 @@
-# ![AirHub V2](https://github.com/Exunys/AirHub-V2/assets/76539058/9d9e3bde-c431-42b1-b014-ed64d284447f) [![Visitors](https://visitor-badge.laobi.icu/badge?page_id=Exunys.AirHub-V2&left_color=black&right_color=purple)](https://github.com/Exunys/AirHub-V2)
+# ![AirHub V2](https://github.com/Exunys/AirHub-V2/assets/76539058/9d9e3bde-c431-42b1-b014-ed64d284447f) [![Visitors](https://visitor-badge.laobi.icu/badge?page_id=Exunys.AirHub-V2&left_color=black&right_color=purple)](https://www.youtube.com/watch?v=sTnXw89-O0s)
 ## 🎆 Remake of the old [AirHub](https://github.com/Exunys/AirHub) script with a new [ESP](https://github.com/Exunys/Exunys-ESP) and [Aimbot](https://github.com/Exunys/Aimbot-V3) 🎆
 ![AirHub V2 Banner](https://github.com/Exunys/AirHub-V2/assets/76539058/b1faa804-64b6-4b57-a968-835d913f2ccf)
 ##
@@ -13,6 +13,8 @@ It uses an entirely new [CS:GO-Styled ESP Module](https://github.com/Exunys/Exun
 The UI Library that this script uses is a forked version of [vozoid's](https://github.com/vozoid) UI Library customized specifically for AirHub V2's standards to give the user a premium exploiting experience.
 
 Press ***Right Shift*** to open/close the GUI. You can also change this key by opening the settings tab and by navigating to the *Settings* section that is located at the top left side of the GUI.
+
+### Watch AirHub V2's showcase [here](https://www.youtube.com/watch?v=sTnXw89-O0s).
 
 #
 ### [1] ![pic1](https://github.com/Exunys/AirHub-V2/assets/76539058/bc4f83be-132c-4146-8561-2aea5a712a9b)
