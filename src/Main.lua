@@ -618,7 +618,7 @@ Crosshair_Settings:Dropdown({
 	Content = {"Mouse", "Center"},
 	Default = ({"Mouse", "Center"})[Crosshair.Position],
 	Callback = function(Value)
-		Crosshair.Position = Value == 1 and "Mouse" or "Center"
+		Crosshair.Position = Value == "Mouse" and 1 or 2
 	end
 })
 
