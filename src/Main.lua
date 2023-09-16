@@ -14,9 +14,12 @@ end
 --// Cache
 
 local game = game
-local loadstring, typeof, select, next = loadstring, typeof, select, next
+local loadstring, typeof, select, next, pcall = loadstring, typeof, select, next, pcall
 local tablefind, tablesort = table.find, table.sort
+local mathfloor = math.floor
 local stringgsub = string.gsub
+local wait, delay, spawn = task.wait, task.delay, task.spawn
+local osdate = os.date
 
 --// Launching
 
@@ -179,7 +182,16 @@ ESPDeveloperSection:Button({
 
 AddValues(ESPSection, ESP_Settings, {"LoadConfigOnLaunch", "PartsOnly"}, "ESPSettings_")
 
-AddValues(AimbotSection, Aimbot_Settings, {"Toggle"}, "Aimbot_")
+AimbotSection:Toggle({
+	Name = "Enabled",
+	Flag = "Aimbot_Enabled",
+	Default = Aimbot_Settings.Enabled,
+	Callback = function(Value)
+		Aimbot_Settings.Enabled = Value
+	end
+})
+
+AddValues(AimbotSection, Aimbot_Settings, {"Enabled", "Toggle", "OffsetToMoveDirection"}, "Aimbot_")
 
 local AimbotDeveloperSection = General:Section({
 	Name = "Aimbot Developer Settings",
@@ -240,6 +252,26 @@ AimbotPropertiesSection:Toggle({
 	end
 })
 
+AimbotPropertiesSection:Toggle({
+	Name = "Offset To Move Direction",
+	Flag = "Aimbot_OffsetToMoveDirection",
+	Default = Aimbot_Settings.OffsetToMoveDirection,
+	Callback = function(Value)
+		Aimbot_Settings.OffsetToMoveDirection = Value
+	end
+})
+
+AimbotPropertiesSection:Slider({
+	Name = "Offset Increment",
+	Flag = "Aimbot_OffsetIncrementy",
+	Default = Aimbot_Settings.OffsetIncrement,
+	Min = 1,
+	Max = 30,
+	Callback = function(Value)
+		Aimbot_Settings.OffsetIncrement = Value
+	end
+})
+
 AimbotPropertiesSection:Slider({
 	Name = "Animation Sensitivity (ms)",
 	Flag = "Aimbot_Sensitivity",
@@ -288,6 +320,28 @@ AimbotPropertiesSection:Keybind({
 	Default = Aimbot_Settings.TriggerKey,
 	Callback = function(Keybind)
 		Aimbot_Settings.TriggerKey = Keybind
+	end
+})
+
+local UserBox = AimbotPropertiesSection:Box({
+	Name = "Player Name (shortened allowed)",
+	Flag = "Aimbot_PlayerName",
+	Placeholder = "Username"
+})
+
+AimbotPropertiesSection:Button({
+	Name = "Blacklist (Ignore) Player",
+	Callback = function()
+		pcall(Aimbot.Blacklist, Aimbot, GUI.flags["Aimbot_PlayerName"])
+		UserBox:Set("")
+	end
+})
+
+AimbotPropertiesSection:Button({
+	Name = "Whitelist Player",
+	Callback = function()
+		pcall(Aimbot.Blacklist, Aimbot, GUI.flags["Aimbot_PlayerName"])
+		UserBox:Set("")
 	end
 })
 
@@ -612,9 +666,7 @@ Crosshair_Settings:Toggle({
 	Name = "Disable Cursor",
 	Flag = "Cursor_Enabled",
 	Default = false,
-	Callback = function(Value)
-		SetMouseIconVisibility(Value)
-	end
+	Callback = SetMouseIconVisibility
 })
 
 AddValues(Crosshair_Settings, Crosshair, {"Enabled"}, "Crosshair_")
@@ -887,7 +939,7 @@ InformationSection:Button({
 	end
 })
 
-InformationSection:Label("AirTeam © 2022 - "..os.date("%Y"))
+InformationSection:Label("AirTeam © 2022 - "..osdate("%Y"))
 
 InformationSection:Button({
 	Name = "Copy Discord Invite",
@@ -896,10 +948,7 @@ InformationSection:Button({
 	end
 })
 
---[==[
-
-local wait, spawn = task.wait, task.spawn
-
+--[=[
 local MiscellaneousSection = Settings:Section({
 	Name = "Miscellaneous",
 	Side = "Right"
@@ -909,18 +958,24 @@ local TimeLabel = MiscellaneousSection:Label("...")
 local FPSLabel = MiscellaneousSection:Label("...")
 local PlayersLabel = MiscellaneousSection:Label("...")
 
-spawn(function()
-	while wait(1) do
-		TimeLabel:Set(os.date("%c"))
-		PlayersLabel:Set(#game.Players:GetPlayers())
-	end
-end)
+MiscellaneousSection:Button({
+    Name = "Rejoin",
+    Callback = Rejoin
+})
 
-game:GetService("RunService").RenderStepped:Connect(function(FPS)
-	FPSLabel:Set("FPS: "..math.floor(1 / FPS))
-end)
+delay(2, function()
+    spawn(function()
+        while wait(1) do
+            TimeLabel:Set(osdate("%c"))
+            PlayersLabel:Set(#Players:GetPlayers())
+        end
+    end)
 
-]==]
+    RunService.RenderStepped:Connect(function(FPS)
+        FPSLabel:Set("FPS: "..mathfloor(1 / FPS))
+    end)
+end)
+]=]
 
 --//
 
