@@ -982,3 +982,10 @@ end)
 ESP.Load()
 Aimbot.Load()
 getgenv().AirHubV2Loaded = true
+
+return function()
+	GUI:Unload()
+	ESP:Exit()
+	Aimbot:Exit()
+	getgenv().AirHubV2Loaded = nil
+end
