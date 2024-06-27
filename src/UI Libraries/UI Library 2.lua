@@ -290,8 +290,8 @@ function Library:CreateWindow(Config, Parent)
 
 				return ButtonInit
 			end
-			function SectionInit:CreateTextBox(Name, PlaceHolder, NumbersOnly, Callback)
-				local Name, PlaceHolder, NumbersOnly, Callback = AIRHUBCONFIG.Name, AIRHUBCONFIG.Placeholder, false, function() end
+			function SectionInit:CreateTextBox(AIRHUBCONFIG)
+				local Name, PlaceHolder, NumbersOnly, Callback = AIRHUBCONFIG.Name, AIRHUBCONFIG.Placeholder, false, AIRHUBCONFIG.Callback
 				local TextBoxInit = {}
 				local TextBox = Folder.TextBox:Clone()
 				TextBox.Name = Name .. " T"
@@ -329,8 +329,7 @@ function Library:CreateWindow(Config, Parent)
 				end
 				return TextBoxInit
 			end
-			function SectionInit:CreateToggle(AIRHUBCONFIG)
-				local Name, Default, Callback = AIRHUBCONFIG.Name, AIRHUBCONFIG.Default, AIRHUBCONFIG.Callback
+			function SectionInit:CreateToggle(Name, Default, Callback)
 				local DefaultLocal = Default or false
 				local ToggleInit = {}
 				local Toggle = Folder.Toggle:Clone()
@@ -383,8 +382,7 @@ function Library:CreateWindow(Config, Parent)
 					return ToggleState
 				end
 
-				function ToggleInit:CreateKeybind(AIRHUBCONFIG)
-					local Bind, Callback = AIRHUBCONFIG.Default, AIRHUBCONFIG.Callback
+				function ToggleInit:CreateKeybind(Bind, Callback)
 					local KeybindInit = {}
 					Bind = Bind or "NONE"
 
