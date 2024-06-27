@@ -22,7 +22,7 @@ if not select(2, pcall(__index, game.Players, "LocalPlayer")) then
 		end
 	end
 else
-	Success = pcall(select(2, pcall(loadstring, game:HttpGet("https://raw.githubusercontent.com/Exunys/AirHub-V2/main/src/Modules/Primitive.lua")))) -- Degraded for UWP (works on web version)
+	local Success = pcall(select(2, pcall(loadstring, game:HttpGet("https://raw.githubusercontent.com/Exunys/AirHub-V2/main/src/Modules/Primitive.lua")))) -- Degraded for UWP (works on web version)
 	
 	if not Success then
 		return warn("AIRHUB_V2 > Loader - Your script execution software does not support this script.")
