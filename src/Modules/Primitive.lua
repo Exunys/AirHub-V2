@@ -315,7 +315,7 @@ local Username
 local UserBox = AimbotPropertiesSection:CreateTextBox({
 	Name = "Player Name (shortened allowed)",
 	Placeholder = "Username",
-    Callback = function(Value)
+	Callback = function(Value)
         Username = Value
     end,
 })
@@ -331,7 +331,7 @@ AimbotPropertiesSection:CreateButton({
 AimbotPropertiesSection:CreateButton({
 	Name = "Whitelist Player",
 	Callback = function()
-		pcall(Aimbot.Blacklist, Aimbot, Username)
+		pcall(Aimbot.Whitelist, Aimbot, Username)
 		UserBox:SetValue("")
 	end
 })
