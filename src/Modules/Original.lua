@@ -340,7 +340,7 @@ AimbotPropertiesSection:Button({
 AimbotPropertiesSection:Button({
 	Name = "Whitelist Player",
 	Callback = function()
-		pcall(Aimbot.Blacklist, Aimbot, GUI.flags["Aimbot_PlayerName"])
+		pcall(Aimbot.Whitelist, Aimbot, GUI.flags["Aimbot_PlayerName"])
 		UserBox:Set("")
 	end
 })
