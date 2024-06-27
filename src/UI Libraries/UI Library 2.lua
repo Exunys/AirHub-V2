@@ -329,7 +329,8 @@ function Library:CreateWindow(Config, Parent)
 				end
 				return TextBoxInit
 			end
-			function SectionInit:CreateToggle(Name, Default, Callback)
+			function SectionInit:CreateToggle(AIRHUBCONFIG)
+				local Name, Default, Callback = AIRHUBCONFIG.Name, AIRHUBCONFIG.Default, AIRHUBCONFIG.Callback
 				local DefaultLocal = Default or false
 				local ToggleInit = {}
 				local Toggle = Folder.Toggle:Clone()
