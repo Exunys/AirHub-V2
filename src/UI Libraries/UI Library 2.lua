@@ -130,7 +130,18 @@ function Library:CreateWindow(Config, Parent)
 	end
 
 	function WindowInit:Toggle(State)
-		Toggle(State)
+		if State then
+			Main.Visible = true
+		else
+			for _,Pallete in pairs(Screen:GetChildren()) do
+				if Pallete:IsA("Frame") and Pallete.Name ~= "Main" then
+					Pallete.Visible = false
+				end
+			end
+			Screen.ToolTip.Visible = false
+			Main.Visible = false
+		end
+		Library.Toggle = State
 	end
 
 	function WindowInit:ChangeColor(Color)
