@@ -23,6 +23,7 @@ Press ***Right Shift*** to open/close the GUI. You can also change this key by o
 #
 # 📑 Update Log *(DD/MM/YYYY)*
 - [01/09/2023] - Release
+- [27/06/2024] - Added a degraded version to support weaker / free exploits 
 
 # 📑 Script
 Load the script by copying it from [here](https://github.com/Exunys/AirHub-V2/blob/main/src/Main.lua) or by executing the code below.
