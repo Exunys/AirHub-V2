@@ -16,6 +16,8 @@ Press ***Right Shift*** to open/close the GUI. You can also change this key by o
 
 ### Watch AirHub V2's showcase [here](https://www.youtube.com/watch?v=sTnXw89-O0s).
 
+### Watch AirHub V2 Primitive's showcase (this version is degraded for free and weaker exploits) [here](https://youtu.be/nGR_FyJ2qRI?si=8Zp0hkOEz6G2-fFG).
+
 #
 ### [1] ![pic1](https://github.com/Exunys/AirHub-V2/assets/76539058/bc4f83be-132c-4146-8561-2aea5a712a9b)
 ### [2] ![pic2](https://github.com/Exunys/AirHub-V2/assets/76539058/bc03fa46-846d-445f-9483-9c91d2ec1b3e)
