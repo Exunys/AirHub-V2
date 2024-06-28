@@ -883,6 +883,6 @@ local GUI_Toggled = true
 game:GetService("UserInputService").InputBegan:Connect(function(Input)
 	if Input.KeyCode == Enum.KeyCode.RightShift then
 		GUI_Toggled = not GUI_Toggled
-		GUI:Toggle(GUI_Toggled)
+		MainFrame:Toggle(GUI_Toggled)
 	end
 end)
