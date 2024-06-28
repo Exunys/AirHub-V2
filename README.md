@@ -8,7 +8,7 @@ This is a universal script that features an Aimbot, Wall Hack (ESP) and a Crossh
 
 This script is an entirely renewed version of the [old AirHub script](https://github.com/Exunys/AirHub). 
 
-It uses an entirely new [CS:GO-Styled ESP Module](https://github.com/Exunys/Exunys-ESP) which has been hardly worked on and pushed to perfection. It also uses an upgraded version of [Exunys's old Aimbot V2 script](https://github.com/Exunys/Aimbot-V3) which goes by [Aimbot V3](https://github.com/Exunys/Aimbot-V3) for the Aimbot.
+It uses an entirely new [CS:GO-Styled ESP Module](https://github.com/Exunys/Exunys-ESP) which has been worked on with ambition and pushed to perfection. It also uses an upgraded version of [Exunys's old Aimbot V2 script](https://github.com/Exunys/Aimbot-V3) which goes by [Aimbot V3](https://github.com/Exunys/Aimbot-V3) for the Aimbot.
 
 The UI Library that this script uses is a forked version of [vozoid's](https://github.com/vozoid) UI Library customized specifically for AirHub V2's standards to give the user a premium exploiting experience.
 
