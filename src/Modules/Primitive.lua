@@ -632,7 +632,7 @@ Crosshair_Settings:CreateToggle({
 Crosshair_Settings:CreateToggle({
 	Name = "Disable Cursor",
 	Flag = "Cursor_Enabled",
-	Default = false,
+	Default = true,
 	Callback = SetMouseIconVisibility
 })
 
