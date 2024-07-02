@@ -265,7 +265,7 @@ function Library:CreateWindow(Config, Parent)
 				return LabelInit
 			end
 			function SectionInit:CreateButton(AIRHUBCONFIG)
-				local Name, Callback, Keybind = AIRHUBCONFIG.Name, AIRHUBCONFIG.Callback, AIRHUBCONFIG.Keybind
+				local Name, Callback = AIRHUBCONFIG.Name, AIRHUBCONFIG.Callback
 				local ButtonInit = {}
 				local Button = Folder.Button:Clone()
 				Button.Name = Name .. " B"
