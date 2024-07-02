@@ -275,7 +275,7 @@ function Library:CreateWindow(Config, Parent)
 				table.insert(Library.ColorTable, Button)
 
 				function ButtonInit:SetText(Content)
-					Button.Title.Text = Text
+					Button.Title.Text = Content
 				end
 
 				function ButtonInit:ChangeCallback(NewCallback)
