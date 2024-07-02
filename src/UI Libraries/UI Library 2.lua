@@ -312,12 +312,17 @@ function Library:CreateWindow(Config, Parent)
 				return ButtonInit
 			end
 			function SectionInit:CreateTextBox(AIRHUBCONFIG)
-				local Name, PlaceHolder, NumbersOnly, Callback = AIRHUBCONFIG.Name, AIRHUBCONFIG.Placeholder, false, AIRHUBCONFIG.Callback
+				local Name, PlaceHolder, NumbersOnly, Callback, Default = AIRHUBCONFIG.Name, AIRHUBCONFIG.Placeholder, false, AIRHUBCONFIG.Callback, AIRHUBCONFIG.Default
 				local TextBoxInit = {}
 				local TextBox = Folder.TextBox:Clone()
 				TextBox.Name = Name .. " T"
 				TextBox.Parent = Section.Container
 				TextBox.Title.Text = Name
+
+				if Default then
+					TextBox.Background.Input.Text = Default
+				end
+				
 				TextBox.Background.Input.PlaceholderText = PlaceHolder
 				TextBox.Title.Size = UDim2.new(1,0,0,TextBox.Title.TextBounds.Y + 5)
 				TextBox.Size = UDim2.new(1,-10,0,TextBox.Title.TextBounds.Y + 25)
