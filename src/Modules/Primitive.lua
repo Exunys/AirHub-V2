@@ -16,12 +16,14 @@ end
 --// Cache
 
 local game = game
-local loadstring, typeof, select, next, pcall = loadstring, typeof, select, next, pcall
+local loadstring, typeof, select, next, pcall, tostring = loadstring, typeof, select, next, pcall, tostring
 local tablefind, tablesort = table.find, table.sort
 local mathfloor = math.floor
-local stringgsub = string.gsub
+local stringgsub, stringmatch, stringbyte = string.gsub, string.match, string.byte
 local wait, delay, spawn = task.wait, task.delay, task.spawn
 local osdate = os.date
+
+local UserInputService = game:GetService("UserInputService")
 
 --// Launching
 
@@ -65,9 +67,13 @@ local Settings = MainFrame:CreateTab("Settings")
 --// Functions
 
 local FixName = function(Name)
-    return stringgsub(Name, "(%l)(%u)", function(...)
+	return stringgsub(Name, "(%l)(%u)", function(...)
 		return select(1, ...).." "..select(2, ...)
 	end)
+end
+
+local FixKey = function(Key)
+	return string.match(tostring(Key), "Enum%.[[KeyCode]*[UserInputType]*]*%.(%w+)")
 end
 
 local AddValues = function(Section, Object, Exceptions)
@@ -299,16 +305,57 @@ AimbotPropertiesSection:CreateDropdown({
 	end
 })
 
-AimbotPropertiesSection:CreateTextBox({
-	Name = "Trigger Key",
-	Flag = "Aimbot_TriggerKey",
-	Default = tostring(Aimbot_Settings.TriggerKey),
-	Placeholder = "Enum.KeyCode[<USER_INPUT>]",
-	Callback = function(Keybind)
-		Aimbot_Settings.TriggerKey = Enum.KeyCode[Keybind]
+local KeyboardInputs, KeyboardKey, MouseKey = false, Enum.KeyCode.E, Enum.UserInputType.MouseButton2
+
+AimbotPropertiesSection:CreateDropdown({
+	Name = "Trigger Key Input Type",
+	Content = {"Keyboard", "Mouse"},
+	Default = KeyboardInputs == true and "Keyboard" or "Mouse",
+	Callback = function(Value)
+		KeyboardInputs = Value == "Keyboard"
+		Aimbot_Settings.TriggerKey = KeyboardInputs and KeyboardKey or MouseKey
 	end
 })
 
+AimbotPropertiesSection:CreateLabel("Trigger Key (Mouse)", true)
+local MouseLabel = AimbotPropertiesSection:CreateLabel("Mouse Keybind: "..FixKey(MouseKey), true)
+
+local _MouseButton = AimbotPropertiesSection:CreateButton({
+	Name = "Press to record",
+	Callback = function() end
+})
+
+_MouseButton:ChangeCallback(function()
+	Recording = true
+	_MouseButton:SetText("...")
+	MouseLabel:UpdateText("Mouse Keybind: RECORDING...")
+end)
+
+UserInputService.InputBegan:Connect(function(Input)
+	if Input.UserInputType.Value ~= 4 and Recording then
+		Recording = false
+		MouseKey = Input.UserInputType
+		_MouseButton:SetText("Press to record")
+		MouseLabel:UpdateText("Mouse Keybind: "..FixKey(Input.UserInputType))
+
+		Aimbot_Settings.TriggerKey = KeyboardInputs and KeyboardKey or MouseKey
+	end
+end)
+
+AimbotPropertiesSection:CreateTextBox({
+	Name = "Trigger Key (Keyboard)",
+	Flag = "Aimbot_TriggerKey",
+	--Default = tostring(Aimbot_Settings.TriggerKey),
+	Placeholder = "Enum.KeyCode[<USER_INPUT>]",
+	Callback = function(Keybind)
+		for _, Keycode in Enum.KeyCode:GetEnumItems() do
+			if Keycode.Value == stringbyte(Keybind, 1, 1) then
+				KeyboardKey = Keycode
+				Aimbot_Settings.TriggerKey = KeyboardInputs and KeyboardKey or MouseKey
+			end
+		end
+	end
+})
 
 local Username
 
@@ -316,8 +363,8 @@ local UserBox = AimbotPropertiesSection:CreateTextBox({
 	Name = "Player Name (shortened allowed)",
 	Placeholder = "Username",
 	Callback = function(Value)
-        Username = Value
-    end,
+		Username = Value
+	end,
 })
 
 AimbotPropertiesSection:CreateButton({
@@ -629,12 +676,18 @@ Crosshair_Settings:CreateToggle({
 	end
 })
 
-Crosshair_Settings:CreateToggle({
-	Name = "Disable Cursor",
-	Flag = "Cursor_Enabled",
-	Default = true,
-	Callback = SetMouseIconVisibility
-})
+do
+	local CursorVisible = UserInputService.MouseIconEnabled
+
+	Crosshair_Settings:CreateToggle({
+		Name = "Disable Cursor",
+		Flag = "Cursor_Enabled",
+		Default = false,
+		Callback = SetMouseIconVisibility
+	})
+
+	SetMouseIconVisibility(CursorVisible)
+end
 
 AddValues(Crosshair_Settings, Crosshair, {"Enabled"}, "Crosshair_")
 
@@ -880,7 +933,7 @@ getgenv().AirHubV2Loaded = true
 
 local GUI_Toggled = true
 
-game:GetService("UserInputService").InputBegan:Connect(function(Input)
+UserInputService.InputBegan:Connect(function(Input)
 	if Input.KeyCode == Enum.KeyCode.RightShift then
 		GUI_Toggled = not GUI_Toggled
 		MainFrame:Toggle(GUI_Toggled)
