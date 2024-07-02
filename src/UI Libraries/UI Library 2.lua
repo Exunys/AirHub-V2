@@ -276,7 +276,6 @@ function Library:CreateWindow(Config, Parent)
 
 				function ButtonInit:SetText(Content)
 					Button.Title.Text = Text
-					Button.Size = UDim2.new(1,-10,0,Label.TextBounds.Y)
 				end
 
 				function ButtonInit:ChangeCallback(NewCallback)
