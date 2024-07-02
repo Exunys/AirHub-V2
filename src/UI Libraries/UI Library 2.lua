@@ -246,13 +246,18 @@ function Library:CreateWindow(Config, Parent)
 				Section.Size = UDim2.new(1,0,0,Section.Container.ListLayout.AbsoluteContentSize.Y + 15)
 			end)
 
-			function SectionInit:CreateLabel(Name)
+			function SectionInit:CreateLabel(Name, Left)
 				local LabelInit = {}
 				local Label = Folder.Label:Clone()
 				Label.Name = Name .. " L"
 				Label.Parent = Section.Container
 				Label.Text = Name
 				Label.Size = UDim2.new(1,-10,0,Label.TextBounds.Y)
+
+				if Left then
+					Label.TextXAlignment = Enum.TextXAlignment.Left
+				end
+
 				function LabelInit:UpdateText(Text)
 					Label.Text = Text
 					Label.Size = UDim2.new(1,-10,0,Label.TextBounds.Y)
