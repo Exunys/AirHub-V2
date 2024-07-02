@@ -275,7 +275,7 @@ function Library:CreateWindow(Config, Parent)
 				table.insert(Library.ColorTable, Button)
 
 				function ButtonInit:SetText(Content)
-					Button.Text = Text
+					Button.Title.Text = Text
 					Button.Size = UDim2.new(1,-10,0,Label.TextBounds.Y)
 				end
 
