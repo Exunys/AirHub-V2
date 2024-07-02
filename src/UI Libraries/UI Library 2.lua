@@ -269,6 +269,11 @@ function Library:CreateWindow(Config, Parent)
 				Button.Size = UDim2.new(1,-10,0,Button.Title.TextBounds.Y + 5)
 				table.insert(Library.ColorTable, Button)
 
+				function ButtonInit:SetText(Content)
+					Button.Text = Text
+					Button.Size = UDim2.new(1,-10,0,Label.TextBounds.Y)
+				end
+
 				Button.MouseButton1Down:Connect(function()
 					Button.BackgroundColor3 = Config.Color
 				end)
