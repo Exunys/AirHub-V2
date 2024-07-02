@@ -265,7 +265,7 @@ function Library:CreateWindow(Config, Parent)
 				return LabelInit
 			end
 			function SectionInit:CreateButton(AIRHUBCONFIG)
-				local Name, Callback = AIRHUBCONFIG.Name, AIRHUBCONFIG.Callback
+				local Name, Callback, Keybind = AIRHUBCONFIG.Name, AIRHUBCONFIG.Callback, AIRHUBCONFIG.Keybind
 				local ButtonInit = {}
 				local Button = Folder.Button:Clone()
 				Button.Name = Name .. " B"
@@ -277,6 +277,10 @@ function Library:CreateWindow(Config, Parent)
 				function ButtonInit:SetText(Content)
 					Button.Text = Text
 					Button.Size = UDim2.new(1,-10,0,Label.TextBounds.Y)
+				end
+
+				function ButtonInit:ChangeCallback(NewCallback)
+					Callback = NewCallback
 				end
 
 				Button.MouseButton1Down:Connect(function()
