@@ -12,6 +12,8 @@ It uses an entirely new [CS:GO-Styled ESP Module](https://github.com/Exunys/Exun
 
 The UI Library that this script uses is a forked version of [vozoid's](https://github.com/vozoid) UI Library customized specifically for AirHub V2's standards to give the user a premium exploiting experience.
 
+The primitive version uses [AlexR32's Brack UI Library](https://github.com/AlexR32/Bracket).
+
 Press ***Right Shift*** to open/close the GUI. You can also change this key by opening the settings tab and by navigating to the *Settings* section that is located at the top left side of the GUI.
 
 ### Watch AirHub V2's showcase [here](https://www.youtube.com/watch?v=sTnXw89-O0s).
