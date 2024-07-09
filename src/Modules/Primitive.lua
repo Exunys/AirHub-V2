@@ -52,7 +52,7 @@ ESP_Settings.Enabled = false
 Crosshair.Enabled = false
 Aimbot_Settings.Enabled = false
 
-local Fonts = {"UI", "System", "Plex", "Monospace"}
+local Fonts = {"Roboto", "Legacy", "SourceSans", "RobotoMono"}
 local TracerPositions = {"Bottom", "Center", "Mouse"}
 local HealthBarPositions = {"Top", "Bottom", "Left", "Right"}
 
