@@ -47,7 +47,7 @@ https://github.com/Exunys/Exunys-ESP?tab=readme-ov-file#-message-to-solara-users
 #
 
 <h1 align="center"> 📑 Update Log (DD/MM/YYYY) 📑 </h1>
-- [01/09/2023] - Release
+- [01/09/2023] - Release<br>
 - [27/06/2024] - Added a degraded version to support weaker / free exploits 
 
 #
