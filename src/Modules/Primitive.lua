@@ -921,7 +921,7 @@ SettingsSection:CreateButton({
 		ESP:Exit()
 		Aimbot:Exit()
 		getgenv().AirHubV2Loaded = nil
-		GUI:DestroyGUI()
+		MainFrame:DestroyGUI()
 	end
 })
 
