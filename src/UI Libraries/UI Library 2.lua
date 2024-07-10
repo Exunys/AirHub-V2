@@ -144,6 +144,10 @@ function Library:CreateWindow(Config, Parent)
 		Library.Toggle = State
 	end
 
+	function WindowInit:DestroyGUI()
+		Screen:Destroy()
+	end
+	
 	function WindowInit:ChangeColor(Color)
 		ChangeColor(Color)
 	end
