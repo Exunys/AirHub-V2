@@ -893,16 +893,6 @@ SettingsSection:CreateKeybind({
 	end
 })
 
-SettingsSection:CreateButton({
-	Name = "Unload Script",
-	Callback = function()
-		GUI:Unload()
-		ESP:Exit()
-		Aimbot:Exit()
-		getgenv().AirHubV2Loaded = nil
-	end
-})
-
 ]]
 
 InformationSection:CreateLabel("Made by Exunys")
@@ -924,6 +914,16 @@ InformationSection:CreateButton({
 })
 
 InformationSection:CreateLabel("Press \"RightShift\" to toggle the GUI on/off.")
+
+SettingsSection:CreateButton({
+	Name = "Unload Script",
+	Callback = function()
+		ESP:Exit()
+		Aimbot:Exit()
+		getgenv().AirHubV2Loaded = nil
+		GUI:DestroyGUI()
+	end
+})
 
 --//
 
