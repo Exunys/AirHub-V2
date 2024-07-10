@@ -237,9 +237,9 @@ local AimbotPropertiesSection = _Aimbot:CreateSection("Properties")
 AimbotPropertiesSection:CreateToggle({
 	Name = "Toggle",
 	Flag = "Aimbot_Toggle",
-	Default = Aimbot_Settings.CreateToggle,
+	Default = Aimbot_Settings.Toggle,
 	Callback = function(Value)
-		Aimbot_Settings.CreateToggle = Value
+		Aimbot_Settings.Toggle = Value
 	end
 })
 
