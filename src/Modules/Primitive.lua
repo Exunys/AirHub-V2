@@ -878,6 +878,7 @@ local ProfilesSection = Settings:CreateSection("Profiles")
 ]]
 
 local InformationSection = Settings:CreateSection("Information")
+local ControlSection = Settings:CreateSection("Control Panel")
 
 --[[
 
@@ -915,7 +916,7 @@ InformationSection:CreateButton({
 
 InformationSection:CreateLabel("Press \"RightShift\" to toggle the GUI on/off.")
 
-SettingsSection:CreateButton({
+ControlSection:CreateButton({
 	Name = "Unload Script",
 	Callback = function()
 		ESP:Exit()
