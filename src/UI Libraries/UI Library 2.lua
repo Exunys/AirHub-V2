@@ -144,7 +144,10 @@ function Library:CreateWindow(Config, Parent)
 		Library.Toggle = State
 	end
 
+	local Connection
+	
 	function WindowInit:DestroyGUI()
+		Connection:Disconnect()
 		Screen:Destroy()
 	end
 	
@@ -170,7 +173,7 @@ function Library:CreateWindow(Config, Parent)
 		Holder.TileSize = UDim2.new(Scale,0,Scale,0)
 	end
 
-	RunService.RenderStepped:Connect(function()
+	Connection = RunService.RenderStepped:Connect(function()
 		if Library.Toggle then
 			Screen.ToolTip.Position = UDim2.new(0,UserInputService:GetMouseLocation().X + 10,0,UserInputService:GetMouseLocation().Y - 5)
 		end
