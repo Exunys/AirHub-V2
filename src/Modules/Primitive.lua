@@ -33,6 +33,9 @@ local GUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/Ai
 local ESP = loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/Exunys-ESP/main/src/ESP.lua"))()
 local Aimbot = loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/Aimbot-V3/main/src/Aimbot.lua"))()
 
+repeat wait() until ESP and Aimbot
+repeat wait() until ESP.Load
+
 --// Variables
 
 local MainFrame = GUI:CreateWindow({WindowName = "AirHub V2", Color = Color3.fromRGB(150, 100, 150), Keybind = Enum.KeyCode.RightShift}, game.CoreGui)
