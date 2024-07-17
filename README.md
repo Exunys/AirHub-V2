@@ -14,6 +14,7 @@
 
 ![Fast](https://img.shields.io/badge/Fast-blue) ![Secure](https://img.shields.io/badge/Secure-darkgreen) ![Customizable](https://img.shields.io/badge/Customizable-purple) ![Organized](https://img.shields.io/badge/Organized-red) ![Optimized](https://img.shields.io/badge/Optimized-darkblue) ![Data Storing](https://img.shields.io/badge/Data-Storing-green) ![Undetectable](https://img.shields.io/badge/Undetectable-violet) ![Simple](https://img.shields.io/badge/Simple-yellow) ![Support](https://img.shields.io/badge/Multiplatform-Support-darkred) ![Reliable](https://img.shields.io/badge/Reliable-lightblue) ![Trusted](https://img.shields.io/badge/Trusted-lightgreen) </h2>
 <h1 align="center"> ℹ️  Information  ℹ️<br><br></h1>
+
 This is a universal script that features an Aimbot, Wall Hack (ESP) and a Crosshair. The customizability of this script makes it stand out from other free scripts some of which **have annoying key systems**. This project is completely free, adless and open sourced.
 
 This script is an entirely renewed version of the [old AirHub script](https://github.com/Exunys/AirHub). 
@@ -61,7 +62,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/AirHub-V2/main
 
 #
 
-<h1 align="center"> 📧 Contact Information </h1>
+<h1 align="center"> 📧 Contact Information 📧</h1>
 
 <h3 align="center"> <a href="https://discord.com/users/611111398818316309">Discord</a></h3>
 <h3 align="center"> <a href="mailto:exunys@gang.email">E-Mail</a></h3>
