@@ -37,16 +37,6 @@ Press ***Right Shift*** to open/close the GUI. You can also change this key by o
 
 #
 
-<h1 align="center"> ❗ If you use Solara, read this ❗<br><br> </h1>
-
-<h3 align="center">
- Please read the following link:
-
-https://github.com/Exunys/Exunys-ESP?tab=readme-ov-file#-message-to-solara-users
-</h3>
-
-#
-
 <h1 align="center"> 📑 Update Log (DD/MM/YYYY) 📑 </h1>
 - [01/09/2023] - Release<br>
 - [27/06/2024] - Added a degraded version to support weaker / free exploits 
