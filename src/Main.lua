@@ -1,11 +1,11 @@
 local game = game
 local select, pcall, loadstring, warn, getgenv = select, pcall, loadstring, warn, getgenv
 
-local __index = getrawmetatable(game).__index
+local __index = getrawmetatable and getrawmetatable(game).__index
 
 repeat task.wait() until game["Players"]
 
-if not select(2, pcall(__index, game.Players, "LocalPlayer")) then
+if not __index or not select(2, pcall(__index, game.Players, "LocalPlayer")) then
 	local Success, Unload = pcall(select(2, pcall(loadstring, game:HttpGet("https://raw.githubusercontent.com/Exunys/AirHub-V2/main/src/Modules/Original.lua")))) -- Original / best version
 	
 	if not Success then
