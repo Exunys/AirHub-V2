@@ -1,3 +1,9 @@
+local getrawmetatable = getrawmetatable or getmetatable
+local setrawmetatable = setrawmetatable or setmetatable
+local newcclosure = newcclosure or function(...)
+	return ...
+end
+
 local drawing = {} do
 	local services = setmetatable({}, {
 		__index = function(self, key)
