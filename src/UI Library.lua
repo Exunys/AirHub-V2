@@ -1094,6 +1094,7 @@ function utility.rgba(r, g, b, alpha)
 		
 		setrawmetatable(rgb, mt)
 	else
+		--[[
 		return setmetatable({
 			R = r,
 			G = g,
@@ -1108,7 +1109,7 @@ function utility.rgba(r, g, b, alpha)
 			__tostring = newcclosure(function(self, key)
 				return string.format("%s, %s, %s", r / 255, g / 255, b / 255) -- Imitate Color3.new
 			end)
-		})
+		})]]
 	end
 	
 	return rgb
