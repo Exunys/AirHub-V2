@@ -1,3 +1,5 @@
+local rgbasupported = getrawmetatable and setrawmetatable and newcclosure
+
 local getrawmetatable = getrawmetatable or getmetatable
 local setrawmetatable = setrawmetatable or setmetatable
 local newcclosure = newcclosure or function(...)
@@ -1079,20 +1081,39 @@ end
 
 function utility.rgba(r, g, b, alpha)
 	local rgb = Color3.fromRGB(r, g, b)
-	local mt = table.clone(getrawmetatable(rgb))
 	
-	setreadonly(mt, false)
-	local old = mt.__index
-	
-	mt.__index = newcclosure(function(self, key)
-		if key:lower() == "a" then
-			return alpha
-		end
+	if rgbasupported then
+		local mt = table.clone(getrawmetatable(rgb))
 		
-		return old(self, key)
-	end)
-	
-	setrawmetatable(rgb, mt)
+		setreadonly(mt, false)
+		local old = mt.__index
+		
+		mt.__index = newcclosure(function(self, key)
+			if key:lower() == "a" then
+				return alpha
+			end
+			
+			return old(self, key)
+		end)
+		
+		setrawmetatable(rgb, mt)
+	else
+		return setmetatable({
+			R = r,
+			G = g,
+			B = b,
+			a = alpha,
+			__type = "Color3"
+		}, {
+			__index = newcclosure(function(self, key)
+				return rgb[key]
+			end),
+
+			__tostring = newcclosure(function(self, key)
+				return string.format("%s, %s, %s", r / 255, g / 255, b / 255) -- Imitate Color3.new
+			end)
+		})
+	end
 	
 	return rgb
 end
@@ -2790,6 +2811,8 @@ function library:Load(options)
 		self.extension = extension
 	end
 
+	--[[
+
 	local cursor = utility.create("Triangle", {
 		Thickness = 6,
 		Color = Color3.fromRGB(200, 150, 200),
@@ -2809,6 +2832,8 @@ function library:Load(options)
 			cursor.Filled = true
 		end
 	end)
+
+	]] -- Custom cursor
 
 	local holder = utility.create("Square", {
 		Transparency = 0,
