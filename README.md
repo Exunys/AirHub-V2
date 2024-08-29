@@ -21,15 +21,13 @@ This script is an entirely renewed version of the [old AirHub script](https://gi
 
 It uses an entirely new [CS:GO-Styled ESP Module](https://github.com/Exunys/Exunys-ESP) which has been worked on with ambition and pushed to perfection. It also uses an upgraded version of [Exunys's old Aimbot V2 script](https://github.com/Exunys/Aimbot-V2) which goes by [Aimbot V3](https://github.com/Exunys/Aimbot-V3) for the Aimbot.
 
-The UI Library that this script uses is a forked version of [vozoid's](https://github.com/vozoid) UI Library customized specifically for AirHub V2's standards to give the user a premium exploiting experience.
-
-The primitive version uses [AlexR32's Brack UI Library](https://github.com/AlexR32/Bracket).
+The UI Library that this script uses is a forked version of an archive from an unknown owner's UI Library customized specifically for AirHub V2's standards to give the user a premium exploiting experience.
 
 Press ***Right Shift*** to open/close the GUI. You can also change this key by opening the settings tab and by navigating to the *Settings* section that is located at the top left side of the GUI.
 
 ### Watch AirHub V2's showcase [here](https://www.youtube.com/watch?v=sTnXw89-O0s).
 
-### Watch AirHub V2 Primitive's showcase (this version is degraded for free and weaker exploits) [here](https://youtu.be/nGR_FyJ2qRI?si=8Zp0hkOEz6G2-fFG).
+### Watch AirHub V2 Primitive's showcase (this version is degraded for free and weaker exploits) ***(DISCONTINUED)*** [here](https://youtu.be/nGR_FyJ2qRI?si=8Zp0hkOEz6G2-fFG).
 
 #
 ### [1] ![pic1](https://github.com/Exunys/AirHub-V2/assets/76539058/bc4f83be-132c-4146-8561-2aea5a712a9b)
@@ -56,3 +54,4 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/AirHub-V2/main
 
 <h3 align="center"> <a href="https://discord.com/users/611111398818316309">Discord</a></h3>
 <h3 align="center"> <a href="mailto:exunys@gang.email">E-Mail</a></h3>
+<h3 align="center"> <a href="t.me/exunys">Telegram</a></h3>
