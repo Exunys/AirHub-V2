@@ -1,5 +1,7 @@
 local rgbasupported = getrawmetatable and setrawmetatable and newcclosure
 
+local firsttabsignal
+
 local drawing = {} do
 	local services = setmetatable({}, {
 		__index = function(self, key)
@@ -2995,8 +2997,8 @@ function library:Load(options)
 		tabtoggle.MouseButton1Down:Connect(function()
 			tabtoggle.Color = tab.Visible == true and utility.changecolor(library.theme["Tab Toggle Background"], 6) or utility.changecolor(library.theme["Tab Background"], 6)
 		end)
-
-		local tabclickconnection = tabtoggle.MouseButton1Click:Connect(function()
+		
+		tabtoggle.MouseButton1Click:Connect(function()
 			for _, obj in next, self.tabtoggles do
 				if obj ~= tabtoggle then
 					utility.changeobjecttheme(obj, "Tab Background")
@@ -3021,6 +3023,8 @@ function library:Load(options)
 			tabtoggle.Color = mouseover and utility.changecolor(library.theme["Tab Toggle Background"], 3) or utility.changecolor(library.theme["Tab Background"], 3)
 			--utility.changeobjecttheme(outline, "Tab Border")
 		end)
+
+		firsttabsignal = firsttabsignal or tabtoggle.MouseButton1Click
 	
 		local tabtypes = utility.table({}, true)
 
@@ -3801,7 +3805,7 @@ function library:Load(options)
 			return sectiontypes
 		end
 
-		return tabtypes, tabclickconnection
+		return tabtypes, firsttabsignal
 	end
 
 	task.delay(1, function()
