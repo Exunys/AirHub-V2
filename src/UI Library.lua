@@ -1194,6 +1194,10 @@ function utility.outline(obj, color)
 end
 
 function utility.create(class, properties)
+	if not type(properties.Visible) == "boolean" then
+		properties.Visible = false
+	end
+	
 	local obj = drawing:new(class)
 
 	for prop, v in next, properties do
