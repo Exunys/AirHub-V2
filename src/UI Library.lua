@@ -2832,7 +2832,8 @@ function library:Load(options)
 		Transparency = 0,
 		ZIndex = 100,
 		Size = UDim2.new(0, sizeX, 0, 24),
-		Position = utility.getcenter(sizeX, sizeY)
+		Position = utility.getcenter(sizeX, sizeY),
+		Visible = false
 	})
 
 	self.holder = holder
