@@ -2805,10 +2805,8 @@ function library:Load(options)
 		self.extension = extension
 	end
 
-	--[[
-
 	local cursor = utility.create("Triangle", {
-		Thickness = 6,
+		Thickness = 2,
 		Color = Color3.fromRGB(200, 150, 200),
 		ZIndex = 1000
 	})
@@ -2826,8 +2824,6 @@ function library:Load(options)
 			cursor.Filled = true
 		end
 	end)
-
-	]] -- Custom cursor
 
 	local holder = utility.create("Square", {
 		Transparency = 0,
