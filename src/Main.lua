@@ -7,9 +7,11 @@
 
 --// Loaded Check
 
-if AirHubV2Loaded or AirHub then
+if AirHubV2Loaded or AirHubV2Loading or AirHub then
 	return
 end
+
+getgenv().AirHubV2Loading = true
 
 --// Cache
 
@@ -54,7 +56,7 @@ local HealthBarPositions = {"Top", "Bottom", "Left", "Right"}
 
 --// Tabs
 
-local General = MainFrame:Tab("General")
+local General, GeneralSignal = MainFrame:Tab("General")
 local _Aimbot = MainFrame:Tab("Aimbot")
 local _ESP = MainFrame:Tab("ESP")
 local _Crosshair = MainFrame:Tab("Crosshair")
@@ -634,10 +636,10 @@ Crosshair_Settings:Toggle({
 })
 
 Crosshair_Settings:Toggle({
-	Name = "Disable Cursor",
-	Flag = "Cursor_Enabled",
-	Default = false,
-	Callback = SetMouseIconVisibility
+    Name = "Enable ROBLOX Cursor",
+    Flag = "Cursor_Enabled",
+    Default = UserInputService.MouseIconEnabled,
+    Callback = SetMouseIconVisibility
 })
 
 AddValues(Crosshair_Settings, Crosshair, {"Enabled"}, "Crosshair_")
@@ -953,10 +955,7 @@ end)
 ESP.Load()
 Aimbot.Load()
 getgenv().AirHubV2Loaded = true
+getgenv().AirHubV2Loading = nil
 
-return function()
-	GUI:Unload()
-	ESP:Exit()
-	Aimbot:Exit()
-	getgenv().AirHubV2Loaded = nil
-end
+GeneralSignal:Fire()
+GUI:Close()
