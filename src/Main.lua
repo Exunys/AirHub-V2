@@ -527,35 +527,6 @@ HeadDot_Properties_Section:Slider({
 	end
 })
 
-local Chams_Properties_Section = _ESP:Section({
-	Name = "Chams Properties",
-	Side = "Right"
-})
-
-AddValues(Chams_Properties_Section, ESP_Properties.Chams, {}, "Chams_Properties_")
-
-Chams_Properties_Section:Slider({
-	Name = "Transparency",
-	Flag = "Chams_Transparency",
-	Default = ESP_Properties.Chams.Transparency * 10,
-	Min = 1,
-	Max = 10,
-	Callback = function(Value)
-		ESP_Properties.Chams.Transparency = Value / 10
-	end
-})
-
-Chams_Properties_Section:Slider({
-	Name = "Thickness",
-	Flag = "Chams_Thickness",
-	Default = ESP_Properties.Chams.Thickness,
-	Min = 1,
-	Max = 5,
-	Callback = function(Value)
-		ESP_Properties.Chams.Thickness = Value
-	end
-})
-
 local Box_Properties_Section = _ESP:Section({
 	Name = "Box Properties",
 	Side = "Left"
