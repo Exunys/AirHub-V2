@@ -38,6 +38,7 @@ Press ***Right Shift*** to open/close the GUI. You can also change this key by o
 <h1 align="center"> 📑 Update Log (DD/MM/YYYY) 📑 </h1>
 - [01/09/2023] - Release<br>
 - [27/06/2024] - Added a degraded version to support weaker / free exploits 
+- [29/08/2024] - Removed primitive version, fixed original version, snipped / shelved chams
 
 #
 
