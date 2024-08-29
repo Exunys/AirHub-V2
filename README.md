@@ -25,6 +25,8 @@ The UI Library that this script uses is a forked version of an archive from an u
 
 Press ***Right Shift*** to open/close the GUI. You can also change this key by opening the settings tab and by navigating to the *Settings* section that is located at the top left side of the GUI.
 
+If you want an even more premium experience with more features (Chams, Skeleton, Highlights, New Boxes (Square; Quad; Corner), NoClip, Fly, Full Bright, Ambient Changer and more features...) refer to [X-Ro](https://x-ro.cc).
+
 ### Watch AirHub V2's showcase [here](https://www.youtube.com/watch?v=sTnXw89-O0s).
 
 ### Watch AirHub V2 Primitive's showcase (this version is degraded for free and weaker exploits) ***(DISCONTINUED)*** [here](https://youtu.be/nGR_FyJ2qRI?si=8Zp0hkOEz6G2-fFG).
