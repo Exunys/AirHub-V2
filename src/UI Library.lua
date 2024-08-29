@@ -3000,7 +3000,7 @@ function library:Load(options)
 			tabtoggle.Color = tab.Visible == true and utility.changecolor(library.theme["Tab Toggle Background"], 6) or utility.changecolor(library.theme["Tab Background"], 6)
 		end)
 
-		tabtoggle.MouseButton1Click:Connect(function()
+		local tabclickconnection = tabtoggle.MouseButton1Click:Connect(function()
 			for _, obj in next, self.tabtoggles do
 				if obj ~= tabtoggle then
 					utility.changeobjecttheme(obj, "Tab Background")
@@ -3025,7 +3025,7 @@ function library:Load(options)
 			tabtoggle.Color = mouseover and utility.changecolor(library.theme["Tab Toggle Background"], 3) or utility.changecolor(library.theme["Tab Background"], 3)
 			--utility.changeobjecttheme(outline, "Tab Border")
 		end)
-
+	
 		local tabtypes = utility.table({}, true)
 
 		function tabtypes:Section(options)
@@ -3805,7 +3805,7 @@ function library:Load(options)
 			return sectiontypes
 		end
 
-		return tabtypes
+		return tabtypes, tabclickconnection
 	end
 
 	task.delay(1, function()
