@@ -326,6 +326,7 @@ local drawing = {} do
 	function drawing:new(shape)
 		local obj = Drawing.new(shape)
 		objexists[obj] = true
+		obj.Visible = false
 		local signalnames = {}
 
 		local listfunc
