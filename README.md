@@ -43,6 +43,7 @@ If you want an even more premium experience with more features (Chams, Skeleton,
 - [01/09/2023] - Release<br>
 - [27/06/2024] - Added a degraded version to support weaker / free exploits 
 - [29/08/2024] - Removed primitive version, fixed original version, snipped / shelved chams
+- [09/10/2024] - Brought back chams, fixed execution for some executors
 
 #
 
