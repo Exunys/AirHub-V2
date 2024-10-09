@@ -619,6 +619,35 @@ HealthBar_Properties_Section:Slider({
 	end
 })
 
+local Chams_Properties_Section = _ESP:Section({
+	Name = "Chams Properties",
+	Side = "Right"
+})
+
+AddValues(Chams_Properties_Section, ESP_Properties.Chams, {}, "Chams_Properties_")
+
+Chams_Properties_Section:Slider({
+	Name = "Transparency",
+	Flag = "Chams_Transparency",
+	Default = ESP_Properties.Chams.Transparency * 10,
+	Min = 1,
+	Max = 10,
+	Callback = function(Value)
+		ESP_Properties.Chams.Transparency = Value / 10
+	end
+})
+
+Chams_Properties_Section:Slider({
+	Name = "Thickness",
+	Flag = "Chams_Thickness",
+	Default = ESP_Properties.Chams.Thickness,
+	Min = 1,
+	Max = 5,
+	Callback = function(Value)
+		ESP_Properties.Chams.Thickness = Value
+	end
+})
+
 --// Crosshair Tab
 
 local Crosshair_Settings = _Crosshair:Section({
@@ -636,10 +665,10 @@ Crosshair_Settings:Toggle({
 })
 
 Crosshair_Settings:Toggle({
-    Name = "Enable ROBLOX Cursor",
-    Flag = "Cursor_Enabled",
-    Default = UserInputService.MouseIconEnabled,
-    Callback = SetMouseIconVisibility
+	Name = "Enable ROBLOX Cursor",
+	Flag = "Cursor_Enabled",
+	Default = UserInputService.MouseIconEnabled,
+	Callback = SetMouseIconVisibility
 })
 
 AddValues(Crosshair_Settings, Crosshair, {"Enabled"}, "Crosshair_")
@@ -932,21 +961,21 @@ local FPSLabel = MiscellaneousSection:Label("...")
 local PlayersLabel = MiscellaneousSection:Label("...")
 
 MiscellaneousSection:Button({
-    Name = "Rejoin",
-    Callback = Rejoin
+	Name = "Rejoin",
+	Callback = Rejoin
 })
 
 delay(2, function()
-    spawn(function()
-        while wait(1) do
-            TimeLabel:Set(osdate("%c"))
-            PlayersLabel:Set(#Players:GetPlayers())
-        end
-    end)
+	spawn(function()
+		while wait(1) do
+			TimeLabel:Set(osdate("%c"))
+			PlayersLabel:Set(#Players:GetPlayers())
+		end
+	end)
 
-    RunService.RenderStepped:Connect(function(FPS)
-        FPSLabel:Set("FPS: "..mathfloor(1 / FPS))
-    end)
+	RunService.RenderStepped:Connect(function(FPS)
+		FPSLabel:Set("FPS: "..mathfloor(1 / FPS))
+	end)
 end)
 ]=]
 
