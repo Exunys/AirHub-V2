@@ -207,7 +207,6 @@ local drawing = {} do
 	local objconnections = {}
 	local objmtchildren = {}
 	local scrollpositions = {}
-	local scrollrefreshes = {}
 	local currentcanvasposobjs = {}
 	local childrenposupdates = {}
 	local childrenvisupdates = {}
@@ -363,75 +362,79 @@ local drawing = {} do
 					self.ClipsDescendants = true
 
 					local function getmaxscroll()
-						local container = mtobjs[self]
 						local contentheight = math.max(0, listcontents[self] or 0)
-						local viewportheight = math.max(0, container.Size.Y)
+						local viewportheight = math.max(0, mtobjs[self].Size.Y)
 
 						return math.max(0, contentheight - viewportheight)
 					end
 
-					local function applyscroll()
+					local function updatevisibility()
 						local container = mtobjs[self]
 						local containerposition = container.Position
 						local containersize = container.Size
-						local maxscroll = getmaxscroll()
 
-						scrollpositions[self] = math.clamp(scrollpositions[self] or 0, -maxscroll, 0)
+						for _, object in next, listchildren[self] do
+							local visible = istouching(
+								object.Position,
+								object.Size,
+								containerposition,
+								containersize
+							)
 
-						for i, object in ipairs(listchildren[self]) do
-							local baseoffset = listindexes[self][i] or 0
-							local newposition = containerposition + Vector2.new(0, baseoffset + scrollpositions[self])
-
-							newposition = Vector2.new(math.floor(newposition.X), math.floor(newposition.Y))
-
-							object.Position = newposition
-							custompropertysets[object]("AbsolutePosition", newposition)
-
-							if childrenposupdates[object] then
-								childrenposupdates[object](objmts[object], newposition)
-							end
-
-							local visible = istouching(object.Position, object.Size, containerposition, containersize)
 							object.Visible = visible and objvisibles[object] or false
 
 							if childrenvisupdates[objmts[object]] then
-								childrenvisupdates[objmts[object]](objmts[object], visible)
+								childrenvisupdates[objmts[object]](objmts[object], object.Visible)
 							end
 						end
 					end
 
-					scrollrefreshes[self] = applyscroll
-
-					local function scroll(direction)
+					local function movecontent(delta)
 						local maxscroll = getmaxscroll()
+						local oldscroll = scrollpositions[self] or 0
+						local targetscroll = math.clamp(oldscroll + delta, -maxscroll, 0)
+						local actualdelta = targetscroll - oldscroll
 
-						if maxscroll <= 0 then
-							scrollpositions[self] = 0
-							applyscroll()
+						if actualdelta == 0 then
+							updatevisibility()
 							return false
 						end
 
-						local step = 32
-						local oldposition = scrollpositions[self] or 0
-						local newposition = math.clamp(oldposition + direction * step, -maxscroll, 0)
+						scrollpositions[self] = targetscroll
 
-						if newposition == oldposition then
-							return false
+						for _, object in next, listchildren[self] do
+							local newposition = object.Position + Vector2.new(0, actualdelta)
+
+							childrenposupdates[objmts[object]](objmts[object], newposition)
+							object.Position = newposition
+							custompropertysets[object]("AbsolutePosition", newposition)
 						end
 
-						scrollpositions[self] = newposition
-						applyscroll()
-
+						updatevisibility()
 						return true
 					end
 
+					local function scroll(direction)
+						-- direction > 0 = move content down
+						-- direction < 0 = move content up
+						return movecontent(direction * 32)
+					end
+
 					refreshscrolling = function()
-						scrollpositions[self] = 0
-						applyscroll()
+						local current = scrollpositions[self] or 0
+
+						if current ~= 0 then
+							movecontent(-current)
+						else
+							updatevisibility()
+						end
 					end
 
 					self.InputChanged:Connect(function(input)
 						if input.UserInputType == Enum.UserInputType.MouseWheel then
+							-- Keep the original wheel behavior:
+							-- wheel up   -> content moves down
+							-- wheel down -> content moves up
 							if input.Position.Z > 0 then
 								scroll(-1)
 							else
@@ -440,7 +443,7 @@ local drawing = {} do
 						end
 					end)
 
-					applyscroll()
+					updatevisibility()
 				else
 					attemptedscrollable = true
 				end
@@ -455,30 +458,25 @@ local drawing = {} do
 
 				listobjs[self] = true
 
-				for _, object in next, objchildren[self] do
-					local spacing = #listchildren[self] == 0 and 0 or padding
-
+				for i, object in next, objchildren[self] do
 					table.insert(listchildren[self], object)
-					table.insert(listindexes[self], listcontents[self] + spacing)
+					table.insert(listindexes[self], listcontents[self] + (#listchildren[self] == 1 and 0 or padding))
 
-					local newposition = mtobjs[self].Position + Vector2.new(0, listcontents[self] + spacing)
+					local newpos = mtobjs[self].Position + Vector2.new(0, listcontents[self] + (#listchildren[self] == 1 and 0 or padding))
+					object.Position = newpos
 
-					object.Position = newposition
-					custompropertysets[object]("AbsolutePosition", newposition)
+					childrenposupdates[object](objmts[object], newpos)
 
-					if childrenposupdates[object] then
-						childrenposupdates[object](objmts[object], newposition)
-					end
+					custompropertysets[object]("AbsolutePosition", newpos)
 
-					listadds[self][object] = object.Size.Y + spacing
-					listcontents[self] = listcontents[self] + object.Size.Y + spacing
+					listadds[self][object] = object.Size.Y + (#listchildren[self] == 1 and 0 or padding)
+					listcontents[self] = listcontents[self] + object.Size.Y + (#listchildren[self] == 1 and 0 or padding)
 				end
 
 				if attemptedscrollable then
 					scrollfunc(self)
 				end
 			end
-
 		end
 
 		local customproperties = {
@@ -814,12 +812,9 @@ local drawing = {} do
 
 							for i, object in next, objchildren[customproperties.Parent] do
 								if i > objindex then
+									object.Position = object.Position + Vector2.new(0, sizediff)
 									listindexes[customproperties.Parent][i] = listindexes[customproperties.Parent][i] + sizediff
 								end
-							end
-
-							if scrollrefreshes[customproperties.Parent] then
-								task.defer(scrollrefreshes[customproperties.Parent])
 							end
 						end
 
