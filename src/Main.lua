@@ -1167,8 +1167,8 @@ end)
 
 --//
 
-ESP.Load()
-Aimbot.Load()
+pcall(ESP.Load)
+pcall(Aimbot.Load)
 getgenv().AirHubV2Loaded = true
 getgenv().AirHubV2Loading = nil
 
