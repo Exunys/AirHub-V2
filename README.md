@@ -58,6 +58,7 @@ Press ***Right Shift*** to open/close the GUI. You can also change this key by o
 - [29/08/2024] - Removed primitive version, fixed original version, snipped / shelved chams
 - [09/10/2024] - Brought back chams, improved runtime compatibility
 - [16/04/2026] - Removed chams, improved runtime compatibility and updated the [targeting](https://github.com/Exunys/Aimbot-V3/commit/46fbdecc8b146a303158c6c38506c00aaf7ce0f2) and [visualization](https://github.com/Exunys/Exunys-ESP?tab=readme-ov-file#-update-log-ddmmyyyy) components
+- [05/10/2026] - Minor runtime compatibility upgrades and introduced new miscellaneous section under settings tab
 
 #
 
