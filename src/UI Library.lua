@@ -207,6 +207,7 @@ local drawing = {} do
 	local objconnections = {}
 	local objmtchildren = {}
 	local scrollpositions = {}
+	local scrollrefreshes = {}
 	local currentcanvasposobjs = {}
 	local childrenposupdates = {}
 	local childrenvisupdates = {}
@@ -357,102 +358,67 @@ local drawing = {} do
 
 			scrollfunc = function(self)
 				if listobjs[self] then
-					scrollpositions[self] = 0
+					scrollpositions[self] = scrollpositions[self] or 0
 					scrollobjs[self] = true
 
 					self.ClipsDescendants = true
 
-					local function scroll(amount)
-						local totalclippedobjs, currentclippedobj, docontinue = 0, nil, false
+					local function applyscroll()
+						local container = mtobjs[self]
+						local containerPosition = container.Position
+						local containerSize = container.Size
+						local contentSize = listcontents[self] or 0
+						local maxScroll = math.max(0, contentSize - containerSize.Y)
+
+						scrollpositions[self] = math.clamp(scrollpositions[self] or 0, -maxScroll, 0)
 
 						for i, object in next, listchildren[self] do
-							if amount == 1 then
-								if object.Position.Y > mtobjs[self].Position.Y then
-									if not istouching(object.Position, object.Size, mtobjs[self].Position, mtobjs[self].Size) then
-										if not currentclippedobj then
-											currentclippedobj = object
-										end
+							local offset = listindexes[self][i] or 0
+							local newPosition = containerPosition + Vector2.new(0, offset + scrollpositions[self])
+							newPosition = Vector2.new(math.floor(newPosition.X), math.floor(newPosition.Y))
 
-										totalclippedobjs = totalclippedobjs + 1
-										docontinue = true
-									end
-								end
-							end
+							childrenposupdates[objmts[object]](objmts[object], newPosition)
+							object.Position = newPosition
+							custompropertysets[object]("AbsolutePosition", newPosition)
 
-							if amount == -1 then
-								if object.Position.Y <= mtobjs[self].Position.Y then
-									if not istouching(object.Position, object.Size, mtobjs[self].Position, mtobjs[self].Size) then
-										currentclippedobj = object
-										totalclippedobjs = totalclippedobjs + 1
-										docontinue = true
-									end
-								end
+							local visible = istouching(object.Position, object.Size, containerPosition, containerSize)
+							object.Visible = visible and objvisibles[object] or false
+
+							if childrenvisupdates[objmts[object]] then
+								childrenvisupdates[objmts[object]](objmts[object], visible)
 							end
 						end
+					end
 
-						if docontinue then
-							if amount > 0 then
-								local poschange = -(currentclippedobj.Size.Y + objpaddings[self])
-								local closestobj
+					scrollrefreshes[self] = applyscroll
 
-								for i, object in next, objchildren[self] do
-									if istouching(object.Position + Vector2.new(0, poschange), object.Size, mtobjs[self].Position, mtobjs[self].Size) then
-										closestobj = object
-										break
-									end
-								end
+					local function scroll(amount)
+						local container = mtobjs[self]
+						local maxScroll = math.max(0, (listcontents[self] or 0) - container.Size.Y)
 
-								local diff = (Vector2.new(0, mtobjs[self].Position.Y) - Vector2.new(0, (closestobj.Position.Y + poschange + objpaddings[self]))).magnitude
-
-								if custompropertygets[mtobjs[self]]("ClipsDescendants") then
-									for i, object in next, objchildren[self] do
-										if not istouching(object.Position + Vector2.new(0, poschange - diff + objpaddings[self]), object.Size, mtobjs[self].Position, mtobjs[self].Size) then
-											object.Visible = false
-											childrenvisupdates[objmts[object]](objmts[object], false)
-										else
-											object.Visible = true
-											childrenvisupdates[objmts[object]](objmts[object], true)
-										end
-									end
-								end
-
-								scrollpositions[self] = scrollpositions[self] + (poschange - diff + objpaddings[self])
-
-								for i, object in next, objchildren[self] do
-									childrenposupdates[objmts[object]](objmts[object], object.Position + Vector2.new(0, poschange - diff + objpaddings[self]))
-									object.Position = object.Position + Vector2.new(0, poschange - diff + objpaddings[self])
-								end
-							else
-								local poschange = currentclippedobj.Size.Y + objpaddings[self]
-
-								if custompropertygets[mtobjs[self]]("ClipsDescendants") then
-									for i, object in next, objchildren[self] do
-										if not istouching(object.Position + Vector2.new(0, poschange), object.Size, mtobjs[self].Position, mtobjs[self].Size) then
-											object.Visible = false
-											childrenvisupdates[objmts[object]](objmts[object], false)
-										else
-											object.Visible = true
-											childrenvisupdates[objmts[object]](objmts[object], true)
-										end
-									end
-								end
-
-								scrollpositions[self] = scrollpositions[self] + poschange
-
-								for i, object in next, objchildren[self] do
-									childrenposupdates[objmts[object]](objmts[object], object.Position + Vector2.new(0, poschange))
-									object.Position = object.Position + Vector2.new(0, poschange)
-								end
-							end
+						if maxScroll <= 0 then
+							scrollpositions[self] = 0
+							applyscroll()
+							return false
 						end
 
-						return docontinue
+						local step = math.max(20, math.floor(container.Size.Y * 0.25))
+						local oldScroll = scrollpositions[self] or 0
+						local direction = amount > 0 and -1 or 1
+						local newScroll = math.clamp(oldScroll + direction * step, -maxScroll, 0)
+
+						if newScroll == oldScroll then
+							return false
+						end
+
+						scrollpositions[self] = newScroll
+						applyscroll()
+						return true
 					end
 
 					refreshscrolling = function()
-						repeat
-						until
-							not scroll(-1)
+						scrollpositions[self] = 0
+						applyscroll()
 					end
 
 					self.InputChanged:Connect(function(input)
@@ -464,6 +430,8 @@ local drawing = {} do
 							end
 						end
 					end)
+
+					applyscroll()
 				else
 					attemptedscrollable = true
 				end
@@ -833,7 +801,6 @@ local drawing = {} do
 							for i, object in next, objchildren[customproperties.Parent] do
 								if i > objindex then
 									object.Position = object.Position + Vector2.new(0, sizediff)
-									listcontents[customproperties.Parent] = listcontents[customproperties.Parent] + sizediff
 									listindexes[customproperties.Parent][i] = listindexes[customproperties.Parent][i] + sizediff
 								end
 							end
