@@ -366,13 +366,52 @@ local drawing = {} do
 						local viewport = mtobjs[self]
 						local maxscroll = math.max(0, listcontents[self] - viewport.Size.Y)
 						local current = scrollpositions[self] or 0
-						local step = 40
-						local target
+						local target = current
+						local padding = objpaddings[self] or 0
 
-						if amount > 0 then
-							target = math.max(current - step, -maxscroll)
+						if maxscroll <= 0 then
+							return false
+						end
+
+						if padding == 12 then
+							local viewportTop = -current
+
+							if amount > 0 then
+								local nextIndex
+								for i, baseY in next, listindexes[self] do
+									if baseY > viewportTop + 0.5 then
+										nextIndex = i
+										break
+									end
+								end
+
+								if nextIndex then
+									target = math.max(-listindexes[self][nextIndex], -maxscroll)
+								else
+									target = -maxscroll
+								end
+							else
+								local previousIndex
+								for i = #listindexes[self], 1, -1 do
+									if listindexes[self][i] < viewportTop - 0.5 then
+										previousIndex = i
+										break
+									end
+								end
+
+								if previousIndex then
+									target = math.min(-listindexes[self][previousIndex], 0)
+								else
+									target = 0
+								end
+							end
 						else
-							target = math.min(current + step, 0)
+							local step = 40
+							if amount > 0 then
+								target = math.max(current - step, -maxscroll)
+							else
+								target = math.min(current + step, 0)
+							end
 						end
 
 						local poschange = target - current
@@ -409,6 +448,7 @@ local drawing = {} do
 
 						return true
 					end
+
 					refreshscrolling = function()
 						repeat
 						until
@@ -3801,3 +3841,4 @@ return library
 
 -- Forked from https://github.com/vozoid/ui-libraries/blob/main/drawing/void/source.lua
 -- Edited by Exunys for AirHub V2
+
