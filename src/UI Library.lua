@@ -365,7 +365,7 @@ local drawing = {} do
 					local function scroll(amount)
 						local viewport = mtobjs[self]
 						local maxscroll = math.max(0, listcontents[self] - viewport.Size.Y)
-						local current = scrollpositions[self]
+						local current = scrollpositions[self] or 0
 						local step = 40
 						local target
 
@@ -383,22 +383,32 @@ local drawing = {} do
 
 						scrollpositions[self] = target
 
-						for _, object in next, objchildren[self] do
-							local newpos = object.Position + Vector2.new(0, poschange)
+						for i = #objchildren[self], 1, -1 do
+							local object = objchildren[self][i]
+							local objectmt = object and objmts[object]
+							if object and objectmt and objexists[object] and object.Position and object.Size then
+								local newpos = object.Position + Vector2.new(0, poschange)
+								local posupdate = childrenposupdates[objectmt]
+								if posupdate then
+									posupdate(objectmt, newpos)
+								end
+								object.Position = newpos
 
-							childrenposupdates[objmts[object]](objmts[object], newpos)
-							object.Position = newpos
-
-							if custompropertygets[viewport]("ClipsDescendants") then
-								local visible = istouching(newpos, object.Size, viewport.Position, viewport.Size) and objvisibles[object] or false
-								object.Visible = visible
-								childrenvisupdates[objmts[object]](objmts[object], visible)
+								if custompropertygets[viewport]("ClipsDescendants") then
+									local visible = istouching(newpos, object.Size, viewport.Position, viewport.Size) and objvisibles[object] or false
+									object.Visible = visible
+									local visupdate = childrenvisupdates[objectmt]
+									if visupdate then
+										visupdate(objectmt, visible)
+									end
+								end
+							else
+								table.remove(objchildren[self], i)
 							end
 						end
 
 						return true
 					end
-
 					refreshscrolling = function()
 						repeat
 						until
@@ -524,9 +534,12 @@ local drawing = {} do
 								table.remove(listchildren[customproperties.Parent], table.find(listchildren[customproperties.Parent], obj))
 							end
 
-							if table.find(objchildren[customproperties.Parent], obj) then
-								table.remove(objchildren[customproperties.Parent], table.find(objchildren[customproperties.Parent], obj))
-								table.remove(listindexes[customproperties.Parent], table.find(objchildren[customproperties.Parent], obj))
+							local childindex = table.find(objchildren[customproperties.Parent], obj)
+							if childindex then
+								table.remove(objchildren[customproperties.Parent], childindex)
+								if listindexes[customproperties.Parent] then
+									table.remove(listindexes[customproperties.Parent], childindex)
+								end
 							end
 						end
 
@@ -783,7 +796,6 @@ local drawing = {} do
 							for i, object in next, objchildren[customproperties.Parent] do
 								if i > objindex then
 									object.Position = object.Position + Vector2.new(0, sizediff)
-									listcontents[customproperties.Parent] = listcontents[customproperties.Parent] + sizediff
 									listindexes[customproperties.Parent][i] = listindexes[customproperties.Parent][i] + sizediff
 								end
 							end
@@ -1214,11 +1226,7 @@ function library:SaveConfig(name)
 				if typeof(value) == "EnumItem" then
 					configtbl[flag] = tostring(value)
 				elseif typeof(value) == "Color3" then
-					if rgbasupported then
-						configtbl[flag] = {color = value:ToHex(), alpha = value.A}
-					else
-						configtbl[flag] = {color = value:ToHex()}
-					end
+					configtbl[flag] = {color = value:ToHex(), alpha = value.A}
 				else
 					configtbl[flag] = value
 				end
