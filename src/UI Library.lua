@@ -1250,41 +1250,58 @@ local flags = {}
 
 local configignores = {}
 
+local function normalizeconfigname(name, extension)
+	if type(name) ~= "string" then
+		return nil
+	end
+
+	name = name:gsub("^%s+", ""):gsub("%s+$", "")
+	name = name:gsub("%s", "_")
+	name = name:gsub("[\\/]", "")
+	name = name:gsub("%." .. extension .. "$", "")
+
+	if name == "" then
+		return nil
+	end
+
+	return name
+end
+
 function library:SaveConfig(name)
-	if type(name) == "string" and name:find("%S+") and name:len() > 1 then
-		name = name:gsub("%s", "_")
+	assert(self.folder, "No folder specified")
+	assert(self.extension, "No file extension specified")
 
-		assert(self.folder, "No folder specified")
-		assert(self.extension, "No file extension specified")
-
-		local configtbl = {}
-
-		for flag, _ in next, flags do
-			if not table.find(configignores, flag) then
-				local value = library.flags[flag]
-
-				if typeof(value) == "EnumItem" then
-					configtbl[flag] = tostring(value)
-				elseif typeof(value) == "Color3" then
-					configtbl[flag] = {color = value:ToHex(), alpha = 1}--rgbasupported and value.A or 1}
-				else
-					configtbl[flag] = value
-				end
-			end
-		end
-
-		local config = services.HttpService:JSONEncode(configtbl)
-		local folderpath = string.format("%s", self.folder)
-
-		if not isfolder(folderpath) then
-			makefolder(folderpath)
-		end
-
-		local filepath = string.format("%s//%s.%s", folderpath, name, self.extension)
-		writefile(filepath, config)
-	else
+	name = normalizeconfigname(name, self.extension)
+	if not name then
 		return false, "improper name"
 	end
+
+	local configtbl = {}
+
+	for flag, _ in next, flags do
+		if not table.find(configignores, flag) then
+			local value = library.flags[flag]
+
+			if typeof(value) == "EnumItem" then
+				configtbl[flag] = tostring(value)
+			elseif typeof(value) == "Color3" then
+				configtbl[flag] = {color = value:ToHex(), alpha = 1--rgbasupported and value.A or 1}
+			else
+				configtbl[flag] = value
+			end
+		end
+	end
+
+	local config = services.HttpService:JSONEncode(configtbl)
+	local folderpath = string.format("%s", self.folder)
+
+	if not isfolder(folderpath) then
+		makefolder(folderpath)
+	end
+
+	local filepath = string.format("%s//%s.%s", folderpath, name, self.extension)
+	writefile(filepath, config)
+	return true
 end
 
 function library:ConfigIgnore(flag)
@@ -1295,32 +1312,52 @@ function library:DeleteConfig(name)
 	assert(self.folder, "No folder specified")
 	assert(self.extension, "No file extension specified")
 
+	name = normalizeconfigname(name, self.extension)
+	if not name or not isfolder(self.folder) then
+		return false
+	end
+
 	local filepath = string.format("%s//%s.%s", self.folder, name, self.extension)
 
-	if isfolder(folderpath) and isfile(filepath) then
+	if isfile(filepath) then
 		delfile(filepath)
+		return true
 	end
+
+	return false
 end
 
 function library:LoadConfig(name)
-	if type(name) == "string" and name:find("%w") then
-		assert(self.folder, "No folder specified")
-		assert(self.extension, "No file extension specified")
+	assert(self.folder, "No folder specified")
+	assert(self.extension, "No file extension specified")
 
-		local filepath = string.format("%s//%s.%s", self.folder, name, self.extension)
+	name = normalizeconfigname(name, self.extension)
+	if not name or not isfolder(self.folder) then
+		return false
+	end
 
-		if isfolder(self.folder) and isfile(filepath) then
-			local file = readfile(filepath)
-			local config = services.HttpService:JSONDecode(file)
+	local filepath = string.format("%s//%s.%s", self.folder, name, self.extension)
 
-			for flag, v in next, config do
-				local func = flags[flag]
-				if func then
-					func(v)
-				end
-			end
+	if not isfile(filepath) then
+		return false
+	end
+
+	local ok, config = pcall(function()
+		return services.HttpService:JSONDecode(readfile(filepath))
+	end)
+
+	if not ok or type(config) ~= "table" then
+		return false
+	end
+
+	for flag, v in next, config do
+		local func = flags[flag]
+		if func then
+			pcall(func, v)
 		end
 	end
+
+	return true
 end
 
 function library:GetConfigs()
@@ -1328,10 +1365,17 @@ function library:GetConfigs()
 	assert(self.extension, "No file extension specified")
 
 	local configs = {}
+	local extension = "." .. self.extension
 
-	for _, config in next, (isfolder(self.folder) and listfiles(self.folder) or {}) do
-		local name = config:gsub(self.folder .. "\\", ""):gsub("." .. self.extension, "")
-		table.insert(configs, name)
+	if not isfolder(self.folder) then
+		return configs
+	end
+
+	for _, filepath in next, listfiles(self.folder) do
+		local filename = filepath:match("([^\\/]+)$")
+		if filename and filename:sub(-#extension) == extension then
+			table.insert(configs, filename:sub(1, #filename - #extension))
+		end
 	end
 
 	return configs
