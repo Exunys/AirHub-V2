@@ -1226,7 +1226,7 @@ function library:SaveConfig(name)
 				if typeof(value) == "EnumItem" then
 					configtbl[flag] = tostring(value)
 				elseif typeof(value) == "Color3" then
-					configtbl[flag] = {color = value:ToHex(), alpha = value.A}
+					configtbl[flag] = {color = value:ToHex(), alpha = rgbasupported and value.A or 1}
 				else
 					configtbl[flag] = value
 				end
