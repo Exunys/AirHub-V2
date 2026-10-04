@@ -415,8 +415,6 @@ local drawing = {} do
 					end
 
 					local function scroll(direction)
-						-- direction > 0 = move content down
-						-- direction < 0 = move content up
 						return movecontent(direction * 32)
 					end
 
@@ -432,13 +430,10 @@ local drawing = {} do
 
 					self.InputChanged:Connect(function(input)
 						if input.UserInputType == Enum.UserInputType.MouseWheel then
-							-- Keep the original wheel behavior:
-							-- wheel up   -> content moves down
-							-- wheel down -> content moves up
 							if input.Position.Z > 0 then
-								scroll(-1)
-							else
 								scroll(1)
+							else
+								scroll(-1)
 							end
 						end
 					end)
