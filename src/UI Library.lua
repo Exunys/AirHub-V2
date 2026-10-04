@@ -1,4 +1,4 @@
-local rgbasupported = getrawmetatable and setrawmetatable and newcclosure
+local rgbasupported = getrawmetatable and setrawmetatable and newcclosure and not string.find(identifyexecutor(), "Solara")
 
 local firsttabsignal
 
