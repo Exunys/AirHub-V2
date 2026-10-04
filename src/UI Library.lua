@@ -431,9 +431,9 @@ local drawing = {} do
 					self.InputChanged:Connect(function(input)
 						if input.UserInputType == Enum.UserInputType.MouseWheel then
 							if input.Position.Z > 0 then
-								scroll(1)
-							else
 								scroll(-1)
+							else
+								scroll(1)
 							end
 						end
 					end)
