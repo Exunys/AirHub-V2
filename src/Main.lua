@@ -1136,15 +1136,17 @@ InformationSection:Button({
 	end
 })
 
---[=[
 local MiscellaneousSection = Settings:Section({
 	Name = "Miscellaneous",
 	Side = "Right"
 })
 
 local TimeLabel = MiscellaneousSection:Label("...")
-local FPSLabel = MiscellaneousSection:Label("...")
 local PlayersLabel = MiscellaneousSection:Label("...")
+local MemoryLabel = MiscellaneousSection:Label("...") -- Client RAM Usage
+local FPSLabel = MiscellaneousSection:Label("...") -- Frames Per Second
+local PPSLabel = MiscellaneousSection:Label("...") -- Physics Per Second
+local TPSLabel = MiscellaneousSection:Label("...") -- Ticks Per Second
 
 MiscellaneousSection:Button({
 	Name = "Rejoin",
@@ -1154,16 +1156,15 @@ MiscellaneousSection:Button({
 delay(2, function()
 	spawn(function()
 		while wait(1) do
-			TimeLabel:Set(osdate("%c"))
-			PlayersLabel:Set(#Players:GetPlayers())
+			TimeLabel:Set("Date: "..osdate("%c"))
+			PlayersLabel:Set("Server count: "..tostring(#Players:GetPlayers()))
+			MemoryLabel:Set("luauMemory: "..string.format("%.1f", gcinfo() / 1024).." MB")
+			FPSLabel:Set("FPS (RenderStepped): "..mathfloor(1 / RunService.RenderStepped:Wait()))
+			PPSLabel:Set("PPS (Stepped): "..mathfloor(1 / RunService.RenderStepped:Wait()))
+			TPSLabel:Set("TPS (Heartbeat): "..mathfloor(1 / RunService.RenderStepped:Wait()))
 		end
 	end)
-
-	RunService.RenderStepped:Connect(function(FPS)
-		FPSLabel:Set("FPS: "..mathfloor(1 / FPS))
-	end)
 end)
-]=]
 
 --//
 
