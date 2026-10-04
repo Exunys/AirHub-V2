@@ -360,37 +360,38 @@ local drawing = {} do
 				if listobjs[self] then
 					scrollpositions[self] = scrollpositions[self] or 0
 					scrollobjs[self] = true
-
 					self.ClipsDescendants = true
 
 					local function getmaxscroll()
 						local container = mtobjs[self]
-						local contentHeight = math.max(0, listcontents[self] or 0)
-						local viewportHeight = math.max(0, container.Size.Y)
+						local contentheight = math.max(0, listcontents[self] or 0)
+						local viewportheight = math.max(0, container.Size.Y)
 
-						return math.max(0, contentHeight - viewportHeight)
+						return math.max(0, contentheight - viewportheight)
 					end
 
 					local function applyscroll()
 						local container = mtobjs[self]
-						local containerPosition = container.Position
-						local containerSize = container.Size
-						local maxScroll = getmaxscroll()
+						local containerposition = container.Position
+						local containersize = container.Size
+						local maxscroll = getmaxscroll()
 
-						scrollpositions[self] = math.clamp(scrollpositions[self] or 0, -maxScroll, 0)
+						scrollpositions[self] = math.clamp(scrollpositions[self] or 0, -maxscroll, 0)
 
 						for i, object in ipairs(listchildren[self]) do
-							local baseOffset = listindexes[self][i] or 0
-							local newPosition = containerPosition + Vector2.new(0, baseOffset + scrollpositions[self])
+							local baseoffset = listindexes[self][i] or 0
+							local newposition = containerposition + Vector2.new(0, baseoffset + scrollpositions[self])
 
-							newPosition = Vector2.new(math.floor(newPosition.X), math.floor(newPosition.Y))
+							newposition = Vector2.new(math.floor(newposition.X), math.floor(newposition.Y))
 
-							childrenposupdates[objmts[object]](objmts[object], newPosition)
-							object.Position = newPosition
-							custompropertysets[object]("AbsolutePosition", newPosition)
+							object.Position = newposition
+							custompropertysets[object]("AbsolutePosition", newposition)
 
-							local visible = istouching(object.Position, object.Size, containerPosition, containerSize)
+							if childrenposupdates[object] then
+								childrenposupdates[object](objmts[object], newposition)
+							end
 
+							local visible = istouching(object.Position, object.Size, containerposition, containersize)
 							object.Visible = visible and objvisibles[object] or false
 
 							if childrenvisupdates[objmts[object]] then
@@ -401,27 +402,24 @@ local drawing = {} do
 
 					scrollrefreshes[self] = applyscroll
 
-					local function scroll(amount)
-						local maxScroll = getmaxscroll()
+					local function scroll(direction)
+						local maxscroll = getmaxscroll()
 
-						if maxScroll <= 0 then
+						if maxscroll <= 0 then
 							scrollpositions[self] = 0
 							applyscroll()
 							return false
 						end
 
-						-- Keep wheel scrolling small and predictable.
-						-- The old implementation moved roughly a quarter of the
-						-- viewport per wheel event, which made sections jump around.
-						local step = 42
-						local oldScroll = scrollpositions[self] or 0
-						local newScroll = math.clamp(oldScroll + amount * step, -maxScroll, 0)
+						local step = 32
+						local oldposition = scrollpositions[self] or 0
+						local newposition = math.clamp(oldposition + direction * step, -maxscroll, 0)
 
-						if newScroll == oldScroll then
+						if newposition == oldposition then
 							return false
 						end
 
-						scrollpositions[self] = newScroll
+						scrollpositions[self] = newposition
 						applyscroll()
 
 						return true
@@ -435,9 +433,9 @@ local drawing = {} do
 					self.InputChanged:Connect(function(input)
 						if input.UserInputType == Enum.UserInputType.MouseWheel then
 							if input.Position.Z > 0 then
-								scroll(1)
-							else
 								scroll(-1)
+							else
+								scroll(1)
 							end
 						end
 					end)
@@ -457,25 +455,30 @@ local drawing = {} do
 
 				listobjs[self] = true
 
-				for i, object in next, objchildren[self] do
+				for _, object in next, objchildren[self] do
+					local spacing = #listchildren[self] == 0 and 0 or padding
+
 					table.insert(listchildren[self], object)
-					table.insert(listindexes[self], listcontents[self] + (#listchildren[self] == 1 and 0 or padding))
+					table.insert(listindexes[self], listcontents[self] + spacing)
 
-					local newpos = mtobjs[self].Position + Vector2.new(0, listcontents[self] + (#listchildren[self] == 1 and 0 or padding))
-					object.Position = newpos
+					local newposition = mtobjs[self].Position + Vector2.new(0, listcontents[self] + spacing)
 
-					childrenposupdates[object](objmts[object], newpos)
+					object.Position = newposition
+					custompropertysets[object]("AbsolutePosition", newposition)
 
-					custompropertysets[object]("AbsolutePosition", newpos)
+					if childrenposupdates[object] then
+						childrenposupdates[object](objmts[object], newposition)
+					end
 
-					listadds[self][object] = object.Size.Y + (#listchildren[self] == 1 and 0 or padding)
-					listcontents[self] = listcontents[self] + object.Size.Y + (#listchildren[self] == 1 and 0 or padding)
+					listadds[self][object] = object.Size.Y + spacing
+					listcontents[self] = listcontents[self] + object.Size.Y + spacing
 				end
 
 				if attemptedscrollable then
 					scrollfunc(self)
 				end
 			end
+
 		end
 
 		local customproperties = {
@@ -778,15 +781,9 @@ local drawing = {} do
 
 							for i, object in next, objchildren[customproperties.Parent] do
 								if i > objindex then
+									object.Position = object.Position + Vector2.new(0, sizediff)
 									listindexes[customproperties.Parent][i] = listindexes[customproperties.Parent][i] + sizediff
 								end
-							end
-
-							-- Rebuild the list from its original offsets when a child
-							-- changes size. This keeps scrolling stable and prevents
-							-- sections from drifting apart.
-							if scrollobjs[customproperties.Parent] and scrollrefreshes[customproperties.Parent] then
-								scrollrefreshes[customproperties.Parent]()
 							end
 						end
 
@@ -821,11 +818,8 @@ local drawing = {} do
 								end
 							end
 
-							-- Rebuild the list from its original offsets when a child
-							-- changes size. This keeps scrolling stable and prevents
-							-- sections from drifting apart.
-							if scrollobjs[customproperties.Parent] and scrollrefreshes[customproperties.Parent] then
-								scrollrefreshes[customproperties.Parent]()
+							if scrollrefreshes[customproperties.Parent] then
+								task.defer(scrollrefreshes[customproperties.Parent])
 							end
 						end
 
