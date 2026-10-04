@@ -357,88 +357,115 @@ local drawing = {} do
 
 			scrollfunc = function(self)
 				if listobjs[self] then
-					scrollpositions[self] = scrollpositions[self] or 0
+					scrollpositions[self] = 0
 					scrollobjs[self] = true
+
 					self.ClipsDescendants = true
 
-					local function getmaxscroll()
-						local contentheight = math.max(0, listcontents[self] or 0)
-						local viewportheight = math.max(0, mtobjs[self].Size.Y)
+					local function scroll(amount)
+						local totalclippedobjs, currentclippedobj, docontinue = 0, nil, false
 
-						return math.max(0, contentheight - viewportheight)
-					end
+						for i, object in next, listchildren[self] do
+							if amount == 1 then
+								if object.Position.Y > mtobjs[self].Position.Y then
+									if not istouching(object.Position, object.Size, mtobjs[self].Position, mtobjs[self].Size) then
+										if not currentclippedobj then
+											currentclippedobj = object
+										end
 
-					local function updatevisibility()
-						local container = mtobjs[self]
-						local containerposition = container.Position
-						local containersize = container.Size
+										totalclippedobjs = totalclippedobjs + 1
+										docontinue = true
+									end
+								end
+							end
 
-						for _, object in next, listchildren[self] do
-							local visible = istouching(
-								object.Position,
-								object.Size,
-								containerposition,
-								containersize
-							)
-
-							object.Visible = visible and objvisibles[object] or false
-
-							if childrenvisupdates[objmts[object]] then
-								childrenvisupdates[objmts[object]](objmts[object], object.Visible)
+							if amount == -1 then
+								if object.Position.Y <= mtobjs[self].Position.Y then
+									if not istouching(object.Position, object.Size, mtobjs[self].Position, mtobjs[self].Size) then
+										currentclippedobj = object
+										totalclippedobjs = totalclippedobjs + 1
+										docontinue = true
+									end
+								end
 							end
 						end
-					end
 
-					local function movecontent(delta)
-						local maxscroll = getmaxscroll()
-						local oldscroll = scrollpositions[self] or 0
-						local targetscroll = math.clamp(oldscroll + delta, -maxscroll, 0)
-						local actualdelta = targetscroll - oldscroll
+						if docontinue then
+							if amount > 0 then
+								local poschange = -(currentclippedobj.Size.Y + objpaddings[self])
+								local closestobj
 
-						if actualdelta == 0 then
-							updatevisibility()
-							return false
+								for i, object in next, objchildren[self] do
+									if istouching(object.Position + Vector2.new(0, poschange), object.Size, mtobjs[self].Position, mtobjs[self].Size) then
+										closestobj = object
+										break
+									end
+								end
+
+								local diff = (Vector2.new(0, mtobjs[self].Position.Y) - Vector2.new(0, (closestobj.Position.Y + poschange + objpaddings[self]))).magnitude
+
+								if custompropertygets[mtobjs[self]]("ClipsDescendants") then
+									for i, object in next, objchildren[self] do
+										if not istouching(object.Position + Vector2.new(0, poschange - diff + objpaddings[self]), object.Size, mtobjs[self].Position, mtobjs[self].Size) then
+											object.Visible = false
+											childrenvisupdates[objmts[object]](objmts[object], false)
+										else
+											object.Visible = true
+											childrenvisupdates[objmts[object]](objmts[object], true)
+										end
+									end
+								end
+
+								scrollpositions[self] = scrollpositions[self] + (poschange - diff + objpaddings[self])
+
+								for i, object in next, objchildren[self] do
+									childrenposupdates[objmts[object]](objmts[object], object.Position + Vector2.new(0, poschange - diff + objpaddings[self]))
+									object.Position = object.Position + Vector2.new(0, poschange - diff + objpaddings[self])
+								end
+							else
+								local poschange = currentclippedobj.Size.Y + objpaddings[self]
+
+								if custompropertygets[mtobjs[self]]("ClipsDescendants") then
+									for i, object in next, objchildren[self] do
+										if not istouching(object.Position + Vector2.new(0, poschange), object.Size, mtobjs[self].Position, mtobjs[self].Size) then
+											object.Visible = false
+											childrenvisupdates[objmts[object]](objmts[object], false)
+										else
+											object.Visible = true
+											childrenvisupdates[objmts[object]](objmts[object], true)
+										end
+									end
+								end
+
+								scrollpositions[self] = scrollpositions[self] + poschange
+
+								for i, object in next, objchildren[self] do
+									childrenposupdates[objmts[object]](objmts[object], object.Position + Vector2.new(0, poschange))
+									object.Position = object.Position + Vector2.new(0, poschange)
+								end
+							end
 						end
 
-						scrollpositions[self] = targetscroll
-
-						for _, object in next, listchildren[self] do
-							local newposition = object.Position + Vector2.new(0, actualdelta)
-
-							childrenposupdates[objmts[object]](objmts[object], newposition)
-							object.Position = newposition
-							custompropertysets[object]("AbsolutePosition", newposition)
-						end
-
-						updatevisibility()
-						return true
-					end
-
-					local function scroll(direction)
-						return movecontent(direction * 32)
+						return docontinue
 					end
 
 					refreshscrolling = function()
-						local current = scrollpositions[self] or 0
-
-						if current ~= 0 then
-							movecontent(-current)
-						else
-							updatevisibility()
-						end
+						repeat
+						until
+							not scroll(-1)
 					end
 
 					self.InputChanged:Connect(function(input)
 						if input.UserInputType == Enum.UserInputType.MouseWheel then
-							if input.Position.Z > 0 then
-								scroll(-1)
-							else
+							local wheel = input.Position.Z
+
+							if wheel < 0 then
 								scroll(1)
+							elseif wheel > 0 then
+								scroll(-1)
 							end
 						end
 					end)
-
-					updatevisibility()
 				else
 					attemptedscrollable = true
 				end
@@ -808,6 +835,7 @@ local drawing = {} do
 							for i, object in next, objchildren[customproperties.Parent] do
 								if i > objindex then
 									object.Position = object.Position + Vector2.new(0, sizediff)
+									listcontents[customproperties.Parent] = listcontents[customproperties.Parent] + sizediff
 									listindexes[customproperties.Parent][i] = listindexes[customproperties.Parent][i] + sizediff
 								end
 							end
