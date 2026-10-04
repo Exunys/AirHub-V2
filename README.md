@@ -53,12 +53,49 @@ Press ***Right Shift*** to open/close the GUI. You can also change this key by o
 
 <h1 align="center"> 📑 Update Log (DD/MM/YYYY) 📑 <br><br> </h1>
 
-- [01/09/2023] - Release<br>
-- [27/06/2024] - Added a degraded version with a reduced-feature variant designed for broader compatibility
-- [29/08/2024] - Removed primitive version, fixed original version, snipped / shelved chams
-- [09/10/2024] - Brought back chams, improved runtime compatibility
-- [16/04/2026] - Removed chams, improved runtime compatibility and updated the [targeting](https://github.com/Exunys/Aimbot-V3/commit/46fbdecc8b146a303158c6c38506c00aaf7ce0f2) and [visualization](https://github.com/Exunys/Exunys-ESP?tab=readme-ov-file#-update-log-ddmmyyyy) components
-- [05/10/2026] - Minor runtime compatibility upgrades and introduced new miscellaneous section under settings tab
+<br>
+
+<details>
+<summary><b>05/10/2026</b> (CURRENT)</summary>
+<ul>
+  <li>Minor runtime compatibility upgrades and introduced new miscellaneous section under settings tab.</li>
+</ul>
+</details>
+
+<details>
+<summary><b>16/04/2026</b></summary>
+<ul>
+  <li>Removed chams, improved runtime compatibility and updated the <a href="https://github.com/Exunys/Aimbot-V3/commit/46fbdecc8b146a303158c6c38506c00aaf7ce0f2">targeting</a> and <a href="https://github.com/Exunys/Exunys-ESP?tab=readme-ov-file#-update-log-ddmmyyyy">visualization</a> components.</li>
+</ul>
+</details>
+
+<details>
+<summary><b>09/10/2024</b></summary>
+<ul>
+  <li>Brought back chams, improved runtime compatibility.</li>
+</ul>
+</details>
+
+<details>
+<summary><b>29/08/2024</b></summary>
+<ul>
+  <li>Removed primitive version, fixed original version, snipped / shelved chams.</li>
+</ul>
+</details>
+
+<details>
+<summary><b>27/06/2024</b></summary>
+<ul>
+  <li>Added a degraded version with a reduced-feature variant designed for broader compatibility.</li>
+</ul>
+</details>
+
+<details>
+<summary><b>01/09/2023</b></summary>
+<ul>
+  <li>Release.</li>
+</ul>
+</details>
 
 #
 
