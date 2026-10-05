@@ -1250,53 +1250,47 @@ local flags = {}
 
 local configignores = {}
 
+local colorflags = {}
+
 local function normalizeconfigname(name, extension)
 	if type(name) ~= "string" then
 		return nil
 	end
 
 	name = name:gsub("^%s+", ""):gsub("%s+$", "")
-	name = name:gsub("[\\/]", "")
-
-	if extension and extension ~= "" then
-		name = name:gsub("%." .. extension .. "$", "")
-	end
-
 	name = name:gsub("%s", "_")
-	name = name:gsub("%.+", ".")
+	name = name:gsub("[\\/]", "")
+	name = name:gsub("%." .. extension .. "$", "")
 
-	if name == "" or name == "." then
+	if name == "" then
 		return nil
 	end
 
 	return name
 end
 
-local function getconfigpath(self, name)
-	local normalized = normalizeconfigname(name, self.extension)
-	if not normalized then
-		return nil
-	end
-
-	return string.format("%s//%s.%s", self.folder, normalized, self.extension)
-end
-
 function library:SaveConfig(name)
 	assert(self.folder, "No folder specified")
 	assert(self.extension, "No file extension specified")
 
-	local filepath = getconfigpath(self, name)
-	if not filepath then
+	name = normalizeconfigname(name, self.extension)
+	if not name then
 		return false, "improper name"
 	end
 
 	local configtbl = {}
 
-	for flag in next, flags do
+	for flag, _ in next, flags do
 		if not table.find(configignores, flag) then
 			local value = library.flags[flag]
+			local colorvalue = colorflags[flag]
 
-			if typeof(value) == "EnumItem" then
+			if colorvalue then
+				configtbl[flag] = {
+					color = colorvalue.color:ToHex(),
+					alpha = colorvalue.alpha
+				}
+			elseif typeof(value) == "EnumItem" then
 				configtbl[flag] = tostring(value)
 			elseif typeof(value) == "Color3" then
 				configtbl[flag] = {
@@ -1309,21 +1303,16 @@ function library:SaveConfig(name)
 		end
 	end
 
-	local ok, result = pcall(function()
-		if not isfolder(self.folder) then
-			makefolder(self.folder)
-		end
+	local config = services.HttpService:JSONEncode(configtbl)
+	local folderpath = string.format("%s", self.folder)
 
-		local config = services.HttpService:JSONEncode(configtbl)
-		writefile(filepath, config)
-		return true
-	end)
-
-	if ok and result then
-		return true
+	if not isfolder(folderpath) then
+		makefolder(folderpath)
 	end
 
-	return false, result
+	local filepath = string.format("%s//%s.%s", folderpath, name, self.extension)
+	writefile(filepath, config)
+	return true
 end
 
 function library:ConfigIgnore(flag)
@@ -1334,90 +1323,72 @@ function library:DeleteConfig(name)
 	assert(self.folder, "No folder specified")
 	assert(self.extension, "No file extension specified")
 
-	local filepath = getconfigpath(self, name)
-	if not filepath then
-		return false, "improper name"
+	name = normalizeconfigname(name, self.extension)
+	if not name or not isfolder(self.folder) then
+		return false
 	end
 
-	local ok, exists = pcall(isfile, filepath)
-	if not ok or not exists then
-		return false, "config not found"
+	local filepath = string.format("%s//%s.%s", self.folder, name, self.extension)
+
+	if isfile(filepath) then
+		delfile(filepath)
+		return true
 	end
 
-	local delete = delfile or deletefile
-	if type(delete) ~= "function" then
-		return false, "delete function unavailable"
-	end
-
-	local deleted, err = pcall(delete, filepath)
-	if deleted then
-		local checkok, stillthere = pcall(isfile, filepath)
-		if checkok and not stillthere then
-			return true
-		end
-		return false, "config could not be deleted"
-	end
-
-	return false, err
+	return false
 end
 
 function library:LoadConfig(name)
 	assert(self.folder, "No folder specified")
-	assert(self.extension, "No extension specified")
+	assert(self.extension, "No file extension specified")
 
-	local filepath = getconfigpath(self, name)
-	if not filepath then
-		return false, "improper name"
+	name = normalizeconfigname(name, self.extension)
+	if not name or not isfolder(self.folder) then
+		return false
 	end
 
-	local readok, file = pcall(readfile, filepath)
-	if not readok or type(file) ~= "string" then
-		return false, "config not found"
+	local filepath = string.format("%s//%s.%s", self.folder, name, self.extension)
+
+	if not isfile(filepath) then
+		return false
 	end
 
-	local decodeok, config = pcall(function()
-		return services.HttpService:JSONDecode(file)
+	local ok, config = pcall(function()
+		return services.HttpService:JSONDecode(readfile(filepath))
 	end)
 
-	if not decodeok or type(config) ~= "table" then
-		return false, "invalid config"
+	if not ok or type(config) ~= "table" then
+		return false
 	end
 
-	local loaded = 0
-
-	for flag, value in next, config do
+	for flag, v in next, config do
 		local func = flags[flag]
-		if type(func) == "function" then
-			local ok = pcall(func, value)
-			if ok then
-				loaded = loaded + 1
-			end
+		if func then
+			pcall(func, v)
 		end
 	end
 
-	return true, loaded
+	return true
 end
 
 function library:GetConfigs()
 	assert(self.folder, "No folder specified")
-	assert(self.extension, "No extension specified")
+	assert(self.extension, "No file extension specified")
 
 	local configs = {}
 	local extension = "." .. self.extension
 
-	local ok, files = pcall(listfiles, self.folder)
-	if not ok or type(files) ~= "table" then
+	if not isfolder(self.folder) then
 		return configs
 	end
 
-	for _, filepath in next, files do
+	for _, filepath in next, listfiles(self.folder) do
 		local filename = filepath:match("([^\\/]+)$")
-		if filename and #filename > #extension and filename:sub(-#extension):lower() == extension:lower() then
+		if filename and filename:sub(-#extension) == extension then
 			table.insert(configs, filename:sub(1, #filename - #extension))
 		end
 	end
 
-	table.sort(configs)
 	return configs
 end
 
@@ -2472,20 +2443,31 @@ function library.createcolorpicker(default, defaultalpha, parent, count, flag, c
 	local oldcolor = hsv
 
 	local function set(color, a, nopos)
+		local savedalpha
+
 		if type(color) == "table" then
-			color = Color3.fromHex(color.color)
+			savedalpha = tonumber(color.alpha)
+			color = color.color
+			if type(color) ~= "string" then
+				return
+			end
+			color = Color3.fromHex(color)
+		elseif type(color) == "string" then
+			color = Color3.fromHex(color)
 		end
 
-		if type(color) == "string" then
-			color = Color3.fromHex(color)
+		if typeof(color) ~= "Color3" then
+			return
 		end
 
 		local oldcolor = hsv
 		local oldalpha = alpha
 
 		hue, sat, val = color:ToHSV()
-		alpha = a or 1
+		alpha = tonumber(a) or savedalpha or 1
 		hsv = Color3.fromHSV(hue, sat, val)
+
+		local output = utility.rgba(hsv.R * 255, hsv.G * 255, hsv.B * 255, alpha)
 
 		if hsv ~= oldcolor or alpha ~= oldalpha then
 			icon.Color = hsv
@@ -2493,20 +2475,21 @@ function library.createcolorpicker(default, defaultalpha, parent, count, flag, c
 			alphaframe.Color = hsv
 
 			if not nopos then
-				saturationpicker.Position = UDim2.new(0, (math.clamp(sat * saturation.AbsoluteSize.X, 0, saturation.AbsoluteSize.X - 2)), 0, (math.clamp((1 - val) * saturation.AbsoluteSize.Y, 0, saturation.AbsoluteSize.Y - 2)))
+				saturationpicker.Position = UDim2.new(0, math.clamp(sat * saturation.AbsoluteSize.X, 0, saturation.AbsoluteSize.X - 2), 0, math.clamp((1 - val) * saturation.AbsoluteSize.Y, 0, saturation.AbsoluteSize.Y - 2))
 				huepicker.Position = UDim2.new(0, math.clamp(hue * hueframe.AbsoluteSize.X, 0, hueframe.AbsoluteSize.X - 2), 0, 0)
 				alphapicker.Position = UDim2.new(0, 0, 0, math.clamp((1 - alpha) * alphaframe.AbsoluteSize.Y, 0, alphaframe.AbsoluteSize.Y - 2))
 				saturation.Color = hsv
 			end
 
 			text.Text = string.format("%s, %s, %s", math.round(hsv.R * 255), math.round(hsv.G * 255), math.round(hsv.B * 255))
-
-			if flag then
-				library.flags[flag] = utility.rgba(hsv.r * 255, hsv.g * 255, hsv.b * 255, alpha)
-			end
-
-			callback(utility.rgba(hsv.r * 255, hsv.g * 255, hsv.b * 255, alpha))
 		end
+
+		if flag then
+			library.flags[flag] = output
+			colorflags[flag] = {color = hsv, alpha = alpha}
+		end
+
+		callback(output)
 	end
 
 	flags[flag] = set
