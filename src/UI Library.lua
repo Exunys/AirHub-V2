@@ -1250,7 +1250,7 @@ local flags = {}
 
 local configignores = {}
 
-local colorflags = {}
+local coloralphas = {}
 
 local function normalizeconfigname(name, extension)
 	if type(name) ~= "string" then
@@ -1280,30 +1280,14 @@ function library:SaveConfig(name)
 
 	local configtbl = {}
 
-	for flag, colorvalue in next, colorflags do
-		if not table.find(configignores, flag) and colorvalue and typeof(colorvalue.color) == "Color3" then
-			configtbl[flag] = {
-				color = colorvalue.color:ToHex(),
-				alpha = tonumber(colorvalue.alpha) or 1
-			}
-		end
-	end
-
 	for flag, value in next, library.flags do
-		if not table.find(configignores, flag) and configtbl[flag] == nil then
-			local colorvalue = colorflags[flag]
-
-			if colorvalue and typeof(colorvalue.color) == "Color3" then
-				configtbl[flag] = {
-					color = colorvalue.color:ToHex(),
-					alpha = tonumber(colorvalue.alpha) or 1
-				}
-			elseif typeof(value) == "EnumItem" then
+		if not table.find(configignores, flag) then
+			if typeof(value) == "EnumItem" then
 				configtbl[flag] = tostring(value)
 			elseif typeof(value) == "Color3" then
 				configtbl[flag] = {
 					color = value:ToHex(),
-					alpha = 1 -- rgbasupported and value.A
+					alpha = 1 --rgbasupported and value.A or tonumber(coloralphas[flag]) or 1
 				}
 			else
 				configtbl[flag] = value
@@ -2245,7 +2229,8 @@ function library.createcolorpicker(default, defaultalpha, parent, count, flag, c
 	end
 	defaultalpha = tonumber(defaultalpha) or 1
 	if flag then
-		colorflags[flag] = {color = default, alpha = defaultalpha}
+		coloralphas[flag] = defaultalpha
+		library.flags[flag] = default
 	end
 
 	local icon = utility.create("Square", {
@@ -2454,9 +2439,8 @@ function library.createcolorpicker(default, defaultalpha, parent, count, flag, c
 	end)
 
 	local hue, sat, val = default:ToHSV()
-	local hsv = default
+	local hsv = nil
 	local alpha = defaultalpha
-	local oldcolor = hsv
 
 	local function set(color, a, nopos)
 		local savedalpha
@@ -2501,8 +2485,8 @@ function library.createcolorpicker(default, defaultalpha, parent, count, flag, c
 		end
 
 		if flag then
-			library.flags[flag] = output
-			colorflags[flag] = {color = hsv, alpha = alpha}
+			library.flags[flag] = hsv
+			coloralphas[flag] = alpha
 		end
 
 		callback(output)
@@ -3924,3 +3908,4 @@ return library
 
 -- Forked from https://github.com/vozoid/ui-libraries/blob/main/drawing/void/source.lua
 -- Edited by Exunys for AirHub V2
+
