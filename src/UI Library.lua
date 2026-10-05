@@ -1251,6 +1251,7 @@ local flags = {}
 local configignores = {}
 
 local coloralphas = {}
+
 local colorvalues = {}
 
 local function normalizeconfigname(name, extension)
@@ -1281,22 +1282,23 @@ function library:SaveConfig(name)
 
 	local configtbl = {}
 
-	for flag, _ in next, flags do
+	for flag, colorvalue in next, colorvalues do
 		if not table.find(configignores, flag) then
-			local colorvalue = colorvalues[flag]
-			local value = library.flags[flag]
+			configtbl[flag] = {
+				color = colorvalue.color:ToHex(),
+				alpha = tonumber(colorvalue.alpha) or 1
+			}
+		end
+	end
 
-			if colorvalue then
-				configtbl[flag] = {
-					color = colorvalue.color:ToHex(),
-					alpha = colorvalue.alpha
-				}
-			elseif typeof(value) == "EnumItem" then
+	for flag, value in next, library.flags do
+		if not colorvalues[flag] and not table.find(configignores, flag) then
+			if typeof(value) == "EnumItem" then
 				configtbl[flag] = tostring(value)
 			elseif typeof(value) == "Color3" then
 				configtbl[flag] = {
 					color = value:ToHex(),
-					alpha = 1 -- rgbasupported and value.A or tonumber(coloralphas[flag]) or 1
+					alpha = 1 --rgbasupported and value.A or tonumber(coloralphas[flag]) or 1
 				}
 			else
 				configtbl[flag] = value
