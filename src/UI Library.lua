@@ -1280,15 +1280,23 @@ function library:SaveConfig(name)
 
 	local configtbl = {}
 
-	for flag, _ in next, flags do
-		if not table.find(configignores, flag) then
-			local value = library.flags[flag]
+	for flag, colorvalue in next, colorflags do
+		if not table.find(configignores, flag) and colorvalue and typeof(colorvalue.color) == "Color3" then
+			configtbl[flag] = {
+				color = colorvalue.color:ToHex(),
+				alpha = tonumber(colorvalue.alpha) or 1
+			}
+		end
+	end
+
+	for flag, value in next, library.flags do
+		if not table.find(configignores, flag) and configtbl[flag] == nil then
 			local colorvalue = colorflags[flag]
 
-			if colorvalue then
+			if colorvalue and typeof(colorvalue.color) == "Color3" then
 				configtbl[flag] = {
 					color = colorvalue.color:ToHex(),
-					alpha = colorvalue.alpha
+					alpha = tonumber(colorvalue.alpha) or 1
 				}
 			elseif typeof(value) == "EnumItem" then
 				configtbl[flag] = tostring(value)
@@ -2232,6 +2240,14 @@ end
 local pickers = {}
 
 function library.createcolorpicker(default, defaultalpha, parent, count, flag, callback)
+	if typeof(default) ~= "Color3" then
+		default = Color3.fromRGB(255, 255, 255)
+	end
+	defaultalpha = tonumber(defaultalpha) or 1
+	if flag then
+		colorflags[flag] = {color = default, alpha = defaultalpha}
+	end
+
 	local icon = utility.create("Square", {
 		Filled = true,
 		Thickness = 0,
@@ -2438,7 +2454,7 @@ function library.createcolorpicker(default, defaultalpha, parent, count, flag, c
 	end)
 
 	local hue, sat, val = default:ToHSV()
-	local hsv = default:ToHSV()
+	local hsv = default
 	local alpha = defaultalpha
 	local oldcolor = hsv
 
@@ -3908,4 +3924,3 @@ return library
 
 -- Forked from https://github.com/vozoid/ui-libraries/blob/main/drawing/void/source.lua
 -- Edited by Exunys for AirHub V2
-
