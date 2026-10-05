@@ -1251,6 +1251,7 @@ local flags = {}
 local configignores = {}
 
 local coloralphas = {}
+local colorvalues = {}
 
 local function normalizeconfigname(name, extension)
 	if type(name) ~= "string" then
@@ -1280,14 +1281,22 @@ function library:SaveConfig(name)
 
 	local configtbl = {}
 
-	for flag, value in next, library.flags do
+	for flag, _ in next, flags do
 		if not table.find(configignores, flag) then
-			if typeof(value) == "EnumItem" then
+			local colorvalue = colorvalues[flag]
+			local value = library.flags[flag]
+
+			if colorvalue then
+				configtbl[flag] = {
+					color = colorvalue.color:ToHex(),
+					alpha = colorvalue.alpha
+				}
+			elseif typeof(value) == "EnumItem" then
 				configtbl[flag] = tostring(value)
 			elseif typeof(value) == "Color3" then
 				configtbl[flag] = {
 					color = value:ToHex(),
-					alpha = 1 --rgbasupported and value.A or tonumber(coloralphas[flag]) or 1
+					alpha = 1 -- rgbasupported and value.A or tonumber(coloralphas[flag]) or 1
 				}
 			else
 				configtbl[flag] = value
@@ -2230,6 +2239,7 @@ function library.createcolorpicker(default, defaultalpha, parent, count, flag, c
 	defaultalpha = tonumber(defaultalpha) or 1
 	if flag then
 		coloralphas[flag] = defaultalpha
+		colorvalues[flag] = {color = default, alpha = defaultalpha}
 		library.flags[flag] = default
 	end
 
@@ -2487,6 +2497,7 @@ function library.createcolorpicker(default, defaultalpha, parent, count, flag, c
 		if flag then
 			library.flags[flag] = hsv
 			coloralphas[flag] = alpha
+			colorvalues[flag] = {color = hsv, alpha = alpha}
 		end
 
 		callback(output)
@@ -3908,4 +3919,3 @@ return library
 
 -- Forked from https://github.com/vozoid/ui-libraries/blob/main/drawing/void/source.lua
 -- Edited by Exunys for AirHub V2
-
