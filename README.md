@@ -46,7 +46,9 @@ Press ***Right Shift*** to open/close the GUI. You can also change this key by o
 
 <h1 align="center"> 🎬  Media  🎬<br><br></h1>
 
-### Watch AirHub V2's showcase [here](https://www.youtube.com/watch?v=sTnXw89-O0s).
+### Watch AirHub V2's showcase [here](https://youtu.be/InVmqyBM_7U).
+
+### Watch the first release of AirHub V2's showcase [here](https://www.youtube.com/watch?v=sTnXw89-O0s).
 
 ### Watch AirHub V2 Primitive's showcase ***(DISCONTINUED)*** [here](https://youtu.be/nGR_FyJ2qRI?si=8Zp0hkOEz6G2-fFG).
 #
