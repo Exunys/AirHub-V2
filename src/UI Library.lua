@@ -167,20 +167,6 @@ local drawing = {} do
 	end
 
 	-- totally not skidded from devforum (trust)
-	local function getlistcontents(listmt)
-		local children = listchildren[listmt] or {}
-		local padding = objpaddings[listmt] or 0
-		local total = 0
-
-		for i, object in next, children do
-			if object and objexists[object] and object.Size then
-				total = total + object.Size.Y + (i == 1 and 0 or padding)
-			end
-		end
-
-		return total
-	end
-
 	local function istouching(pos1, size1, pos2, size2)
 		local top = pos2.Y - pos1.Y
 		local bottom = pos2.Y + size2.Y - (pos1.Y + size1.Y)
@@ -378,7 +364,7 @@ local drawing = {} do
 
 					local function scroll(amount)
 						local viewport = mtobjs[self]
-						local maxscroll = math.max(0, getlistcontents(self) - viewport.Size.Y)
+						local maxscroll = math.max(0, listcontents[self] - viewport.Size.Y)
 						local current = scrollpositions[self] or 0
 						local target = current
 						local padding = objpaddings[self] or 0
@@ -507,8 +493,6 @@ local drawing = {} do
 					listcontents[self] = listcontents[self] + object.Size.Y + (#listchildren[self] == 1 and 0 or padding)
 				end
 
-				listcontents[self] = getlistcontents(self)
-
 				if attemptedscrollable then
 					scrollfunc(self)
 				end
@@ -561,7 +545,7 @@ local drawing = {} do
 				end
 
 				if k == "AbsoluteContentSize" then
-					return getlistcontents(self)
+					return listcontents[self]
 				end
 
 				if k == "GetChildren" then
@@ -578,7 +562,7 @@ local drawing = {} do
 						if customproperties.Parent and listobjs[customproperties.Parent] then
 							local objindex = table.find(objchildren[customproperties.Parent], obj)
 
-							listcontents[customproperties.Parent] = math.max(0, getlistcontents(customproperties.Parent) - (listadds[customproperties.Parent][obj] or 0))
+							listcontents[customproperties.Parent] = listcontents[customproperties.Parent] - listadds[customproperties.Parent][obj]
 
 							for i, object in next, objchildren[customproperties.Parent] do
 								if i > objindex then
@@ -586,9 +570,8 @@ local drawing = {} do
 								end
 							end
 
-							local listindex = table.find(listchildren[customproperties.Parent], obj)
-							if listindex then
-								table.remove(listchildren[customproperties.Parent], listindex)
+							if table.find(listchildren[customproperties.Parent], obj) then
+								table.remove(listchildren[customproperties.Parent], table.find(listchildren[customproperties.Parent], obj))
 							end
 
 							local childindex = table.find(objchildren[customproperties.Parent], obj)
@@ -809,12 +792,12 @@ local drawing = {} do
 						end
 
 						if customproperties.Parent and listobjs[customproperties.Parent] then
-							local oldsize = typeof(obj.Size) == "Vector2" and obj.Size.Y or 0
+							local oldsize = obj.Size.Y
 							local sizediff = v.Y - oldsize
 
 							local objindex = table.find(objchildren[customproperties.Parent], obj)
 
-							listcontents[customproperties.Parent] = math.max(0, getlistcontents(customproperties.Parent) + sizediff)
+							listcontents[customproperties.Parent] = listcontents[customproperties.Parent] + sizediff
 							listadds[customproperties.Parent][obj] = listadds[customproperties.Parent][obj] + sizediff
 
 							for i, object in next, objchildren[customproperties.Parent] do
@@ -842,12 +825,12 @@ local drawing = {} do
 						end
 					else
 						if customproperties.Parent and listobjs[customproperties.Parent] then
-							local oldsize = typeof(obj.Size) == "Vector2" and obj.Size.Y or 0
+							local oldsize = obj.Size.Y
 							local sizediff = v.Y - oldsize
 
 							local objindex = table.find(objchildren[customproperties.Parent], obj)
 
-							listcontents[customproperties.Parent] = math.max(0, getlistcontents(customproperties.Parent) + sizediff)
+							listcontents[customproperties.Parent] = listcontents[customproperties.Parent] + sizediff
 							listadds[customproperties.Parent][obj] = listadds[customproperties.Parent][obj] + sizediff
 
 							for i, object in next, objchildren[customproperties.Parent] do
@@ -901,17 +884,17 @@ local drawing = {} do
 
 					if listobjs[v] then
 						table.insert(listchildren[v], obj)
-						table.insert(listindexes[v], getlistcontents(v) + (#listchildren[v] == 1 and 0 or (objpaddings[v] or 0)))
+						table.insert(listindexes[v], listcontents[v] + (#listchildren[v] == 1 and 0 or objpaddings[v]))
 
-						local newpos = Vector2.new(0, getlistcontents(v) + (#listchildren[v] == 1 and 0 or (objpaddings[v] or 0)))
+						local newpos = Vector2.new(0, listcontents[v] + (#listchildren[v] == 1 and 0 or objpaddings[v]))
 
 						if scrollobjs[v] then
-							newpos = Vector2.new(0, getlistcontents(v) + (#listchildren[v] == 1 and 0 or (objpaddings[v] or 0)) + (scrollpositions[v] or 0))
+							newpos = Vector2.new(0, listcontents[v] + (#listchildren[v] == 1 and 0 or objpaddings[v]) + scrollpositions[v])
 						end
 
 						listadds[v][obj] = obj.Size.Y + (#listchildren[v] == 1 and 0 or objpaddings[v])
 
-						listcontents[v] = getlistcontents(v) + obj.Size.Y + (#listchildren[v] == 1 and 0 or (objpaddings[v] or 0))
+						listcontents[v] = listcontents[v] + obj.Size.Y + (#listchildren[v] == 1 and 0 or objpaddings[v])
 
 						obj.Position = newpos
 
