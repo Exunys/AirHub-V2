@@ -108,7 +108,7 @@ local AddValues = function(Section, Object, Exceptions, Prefix)
 			Name = stringgsub(Index, "(%l)(%u)", function(...)
 				return select(1, ...).." "..select(2, ...)
 			end),
-			Flag = Index,
+			Flag = Prefix..Index,
 			Default = Value,
 			Callback = function(_Value)
 				Object[Index] = _Value
